@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Finance Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1173d4",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-black dark:text-white">
+<div class="flex min-h-screen">
+<aside class="w-64 bg-background-light dark:bg-background-dark border-r border-black/10 dark:border-white/10 p-4 flex flex-col">
+<h1 class="text-2xl font-bold mb-8">My App</h1>
+<nav class="flex flex-col space-y-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-black/60 dark:text-white/60 hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-black dark:hover:text-white transition-colors" href="#">
+<svg class="fill-current" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z"></path></svg>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-primary text-white" href="#">
+<svg class="fill-current" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M116,80h4v40h-4a20,20,0,0,1,0-40Zm32,56H136v40h12a20,20,0,0,0,0-40Zm84-8A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-48,28a36,36,0,0,0-36-36H136V80h4a20,20,0,0,1,20,20,8,8,0,0,0,16,0,36,36,0,0,0-36-36h-4V56a8,8,0,0,0-16,0v8h-4a36,36,0,0,0,0,72h4v40h-8a20,20,0,0,1-20-20,8,8,0,0,0-16,0,36,36,0,0,0,36,36h8v8a8,8,0,0,0,16,0v-8h12A36,36,0,0,0,184,156Z"></path></svg>
+<span>Finance</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-black/60 dark:text-white/60 hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-black dark:hover:text-white transition-colors" href="#">
+<svg class="fill-current" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.7a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,0,1,55.53,105.64,95.83,95.83,0,0,1,47.22,37.71A8,8,0,0,1,250.14,206.7Z"></path></svg>
+<span>Salawat</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col space-y-2">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-black/60 dark:text-white/60 hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-black dark:hover:text-white transition-colors" href="#">
+<svg class="fill-current" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path></svg>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-black/60 dark:text-white/60 hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-black dark:hover:text-white transition-colors" href="#">
+<svg class="fill-current" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
+<span>Help</span>
+</a>
+</div>
+</aside>
+<main class="flex-1 p-8">
+<h1 class="text-3xl font-bold mb-8">Finance Dashboard</h1>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="lg:col-span-1 space-y-6">
+<div class="bg-white dark:bg-background-dark p-6 rounded-lg border border-black/10 dark:border-white/10">
+<h2 class="text-xl font-semibold mb-4">Save Transaction</h2>
+<form class="space-y-4">
+<div>
+<label class="block text-sm font-medium text-black/80 dark:text-white/80" for="amount">Amount</label>
+<input class="form-input mt-1 block w-full rounded border-black/20 dark:border-white/20 bg-background-light dark:bg-black/20 focus:ring-primary focus:border-primary" id="amount" placeholder="Enter amount" type="number"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-black/80 dark:text-white/80" for="description">Description</label>
+<input class="form-input mt-1 block w-full rounded border-black/20 dark:border-white/20 bg-background-light dark:bg-black/20 focus:ring-primary focus:border-primary" id="description" placeholder="Enter description" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-black/80 dark:text-white/80" for="category">Category</label>
+<select class="form-select mt-1 block w-full rounded border-black/20 dark:border-white/20 bg-background-light dark:bg-black/20 focus:ring-primary focus:border-primary" id="category">
+<option>Select a category</option>
+<option>Food</option>
+<option>Income</option>
+<option>Bills</option>
+<option>Groceries</option>
+</select>
+</div>
+<button class="w-full bg-primary text-white font-semibold py-2 px-4 rounded-lg hover:bg-primary/90 transition-colors" type="submit">Save</button>
+</form>
+</div>
+<div class="bg-white dark:bg-background-dark p-6 rounded-lg border border-black/10 dark:border-white/10">
+<h2 class="text-xl font-semibold mb-4">Month End Summary</h2>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-black/80 dark:text-white/80">Total Income</span>
+<span class="font-semibold text-lg">$2000.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-black/80 dark:text-white/80">Total Expenses</span>
+<span class="font-semibold text-lg">$1500.00</span>
+</div>
+<div class="border-t border-black/10 dark:border-white/10 my-2"></div>
+<div class="flex justify-between items-center font-bold">
+<span>Net Savings</span>
+<span class="text-xl text-green-500">$500.00</span>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-2 bg-white dark:bg-background-dark p-6 rounded-lg border border-black/10 dark:border-white/10">
+<h2 class="text-xl font-semibold mb-4">Transaction Details</h2>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-black/10 dark:border-white/10 bg-background-light dark:bg-black/20">
+<th class="p-3 font-semibold">Date</th>
+<th class="p-3 font-semibold">Amount</th>
+<th class="p-3 font-semibold">Description</th>
+<th class="p-3 font-semibold">Category</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-black/10 dark:border-white/10">
+<td class="p-3 text-black/80 dark:text-white/80">2024-01-15</td>
+<td class="p-3 text-red-500">-$50.00</td>
+<td class="p-3 text-black/80 dark:text-white/80">Grocery shopping</td>
+<td class="p-3 text-black/80 dark:text-white/80">Food</td>
+</tr>
+<tr class="border-b border-black/10 dark:border-white/10">
+<td class="p-3 text-black/80 dark:text-white/80">2024-01-16</td>
+<td class="p-3 text-green-500">+$200.00</td>
+<td class="p-3 text-black/80 dark:text-white/80">Salary</td>
+<td class="p-3 text-black/80 dark:text-white/80">Income</td>
+</tr>
+<tr class="border-b border-black/10 dark:border-white/10">
+<td class="p-3 text-black/80 dark:text-white/80">2024-01-17</td>
+<td class="p-3 text-red-500">-$30.00</td>
+<td class="p-3 text-black/80 dark:text-white/80">Dinner</td>
+<td class="p-3 text-black/80 dark:text-white/80">Food</td>
+</tr>
+<tr class="border-b border-black/10 dark:border-white/10">
+<td class="p-3 text-black/80 dark:text-white/80">2024-01-18</td>
+<td class="p-3 text-red-500">-$100.00</td>
+<td class="p-3 text-black/80 dark:text-white/80">Utilities</td>
+<td class="p-3 text-black/80 dark:text-white/80">Bills</td>
+</tr>
+<tr>
+<td class="p-3 text-black/80 dark:text-white/80">2024-01-19</td>
+<td class="p-3 text-red-500">-$25.00</td>
+<td class="p-3 text-black/80 dark:text-white/80">Coffee</td>
+<td class="p-3 text-black/80 dark:text-white/80">Food</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
