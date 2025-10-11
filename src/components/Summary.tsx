@@ -2,8 +2,16 @@ import React, { useEffect, useState } from "react";
 import { getSummary } from "../api/transactionApi";
 import type { SummaryItem } from "../models/SummaryItem";
 
+interface TotalSummary {
+    IN: number;
+    OUT: number;
+    Leftover: number;
+  }
+
+
 const Summary: React.FC = () => {
   const [summary, setSummary] = useState<SummaryItem[]>([]);
+  const [totals, setTotals] = useState<TotalSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,6 +38,7 @@ const Summary: React.FC = () => {
         });
 
         setSummary(transformed);
+        setTotals(data.TotalSummary || null); // Save totals for footer row
       } catch (err) {
         setError("Failed to fetch summary");
       } finally {
@@ -61,6 +70,15 @@ const Summary: React.FC = () => {
               <td style={tdStyle}>{item.totalAmount}</td>
             </tr>
           ))}
+          {totals && (
+            <tr style={{ fontWeight: "bold", background: "#f0f0f0" }}>
+              <td style={tdStyle}>Totals</td>
+              <td style={tdStyle}>
+                IN: {totals.IN}, OUT: {totals.OUT}, Leftover: {totals.Leftover}
+              </td>
+              <td style={tdStyle}></td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
