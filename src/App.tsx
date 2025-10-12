@@ -1,5 +1,4 @@
 import React,{ useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import type { Module, SubModule } from "./components/sidebar";
 import { Splitter, SplitterPanel } from 'primereact/splitter';
