@@ -22,12 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   return (
     <div
-      style={{
-        width: "200px",
-        background: "#f0f0f0",
-        padding: "20px",
-        borderRight: "1px solid #ccc",
-      }}
+      className="card flex"
     >
       <h3>Modules</h3>
       <ul style={{ listStyle: "none", padding: 0 }}>

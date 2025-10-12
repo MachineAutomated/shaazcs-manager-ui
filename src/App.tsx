@@ -11,10 +11,10 @@ function App() {
   const [selectedModule, setSelectedModule] = useState<Module>(null);
   const [selectedSubModule, setSelectedSubModule] = useState<SubModule>(null);
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className="card flex flex-wrap gap-3 p-fluid">
+      {/* <header className="App-header"> */}
       
-    <Splitter style={{ height: '300px' }}>
+    <Splitter style={{ height: '600px', width: '1200px'}}>
       <SplitterPanel className="flex align-items-center justify-content-center" size={25} minSize={10}>
          <Sidebar 
           selectedModule={selectedModule}
@@ -27,15 +27,13 @@ function App() {
          />
       </SplitterPanel>
       <SplitterPanel className="flex align-items-center justify-content-center" size={75}>
-      {/* <div style={{ flex: 1, padding: "20px", overflowY: "auto" }}> */}
         <Content
           selectedModule={selectedModule}
           selectedSubModule={selectedSubModule}
         />
-      {/* </div> */}
       </SplitterPanel>
     </Splitter>
-    </header>
+    {/* </header> */}
     </div>
   );
 }

@@ -6,6 +6,8 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { objectToMap } from "../utils/utility";
 import { Calendar } from 'primereact/calendar';
+import { FloatLabel } from 'primereact/floatlabel';
+import { Button } from 'primereact/button';
         
 interface CategoryOption {
   label: string;
@@ -93,7 +95,7 @@ const handleDateChange = (e: any) => {
 };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "8px", width: "250px" }}>
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column"}}>
       <div className="card flex justify-content-center">
         <InputText
             type="text"
@@ -109,41 +111,14 @@ const handleDateChange = (e: any) => {
         ) : (
         <div className="card flex justify-content-center">
           <Dropdown
-        value={CategoryNumber}
-        options={categories}
-        onChange={(e) => setCategoryNumber(e.value)}
-        placeholder="Select Category"
-        filter     // enables search
-        showClear  // adds clear (X) button
-        className="w-full md:w-14rem"
-      />
-        {/* <Dropdown 
-          value={CategoryNumber} 
-          onChange={(e) => setCategoryNumber(e.target.value)}
-          required
-          options={
-              Object.entries(categories).values.values().map(([key, value]) => (
-              <option key={key} value={key}>
-                {value}
-              </option>
-            ))
-
-          } 
-          optionLabel="Select Category" 
-          placeholder="Select Category" className="w-full md:w-14rem" 
-        /> */}
-        {/* <select
-          value={CategoryNumber}
-          onChange={(e) => setCategoryNumber(e.target.value)}
-          required
-        >
-          <option value="">Select Category</option>
-          {Object.entries(categories).map(([number, name]) => (
-            <option key={number} value={number}>
-              {name}
-            </option>
-          ))}
-        </select> */}
+            value={CategoryNumber}
+            options={categories}
+            onChange={(e) => setCategoryNumber(e.value)}
+            placeholder="Select Category"
+            filter     // enables search
+            showClear  // adds clear (X) button
+            className="w-full md:w-14rem"
+          />
         </div>
       )}
       <div className="card flex justify-content-center">
@@ -155,62 +130,69 @@ const handleDateChange = (e: any) => {
             onChange={(e) => setAmount(e.target.value)}
         />
       </div>
-      <label style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-        <div className="card flex justify-content-center">
-            <Checkbox onChange={(e) => setUpdateIfExists(e.target.checked)} checked={UpdateIfExists}></Checkbox>
-        </div>
-        {/* <input
-          type="checkbox"
-          checked={UpdateIfExists}
-          onChange={(e) => setUpdateIfExists(e.target.checked)}
-        /> */}
-        Update If Exists
-      </label>
-      {/* UseCreatedAt checkbox + Calendar */}
-      <div>
-          <div className="card flex justify-content-center">
-            <Checkbox onChange={(e) => setUseCreatedAt(e.target.checked)} checked={UseCreatedAt}></Checkbox>
-        </div>
-        Use CreatedAt Time
-        {UseCreatedAt && (
-          <div className="mt-2">
-            <Calendar
-              value={CreatedAt}
-              onChange={handleDateChange}
-              showTime
-              showSeconds
-              hourFormat="24"
-              showIcon
-              dateFormat="dd.mm.yy"
-            />
-            <p style={{ fontSize: "12px", color: "gray" }}>
-              {formattedDate
-                ? `Selected: ${formattedDate}`
-                : "No date selected"}
-            </p>
-          </div>
-        )}
-      </div>
+        <div className="card flex align-left" style={{flexDirection:"row"}} >
+            <Checkbox 
+              className="ml-2"
+              id='updateIfExistsCheck' 
+              onChange={(e) => setUpdateIfExists(e.target.checked)} 
+              checked={UpdateIfExists}
+              style={{marginLeft:"0px"}}
+            >
+            </Checkbox>
+            <label htmlFor="updateIfExistsCheck" className="ml-2" >Update If Exists</label>
+       
 
-        {/* {UseCreatedAt && (
-        <Calendar
-        value={CreatedAt}
-        onChange={handleChange}
-        showTime           // 👈 enables time selection
-        hourFormat="24"    // can be "12" or "24"
-        dateFormat="dd.mm.yy"
-        showIcon
-      /> */}
-        {/* // <input
-        //   type="datetime-local"
-        //   value={CreatedAt}
-        //   onChange={(e) => setCreatedAt(formatDateTime(e.target.value))}
-        // /> */}
+        {/* UseCreatedAt checkbox + Calendar */}
         
-      
-      {/* // )} */}
+            <Checkbox
+              className="ml-2"
+              id='useCreatedAtCheck' 
+              onChange={(e) => setUseCreatedAt(e.target.checked)} 
+              checked={UseCreatedAt}
+              style={{marginLeft:"30%"}}
+            >
+            </Checkbox>
+            
+            <label htmlFor="useCreatedAtCheck" className="ml-2" 
+              style={{marginBottom:"10px"}}
+            >
+              Use CreatedAt Time
+            </label>
+          
+            {/* </div>
+        <div className="card flex justify-content-center"> */}
+            {UseCreatedAt && (
+              
+              
+                <FloatLabel >
+                <Calendar 
+                  id="createdAtdisplay" 
+                  value={CreatedAt} 
+                  onChange={handleDateChange} 
+                  showTime 
+                  hourFormat="24"
+                  dateFormat="dd.mm.yy"
+                  style={{marginTop:"20px"}}
+                />
+                <label htmlFor="createdAtdisplay" className="font-bold block" 
+                >
+                    Use Created At
+                </label>
+                <p style={{ fontSize: "12px", color: "gray" }}>
+                  {formattedDate
+                    ? `Selected: ${formattedDate}`
+                    : "No date selected"}
+                </p>
+                </FloatLabel>
+            )}
+         
+            <Button 
+              label="Submit" 
+              style={{marginTop:"20px", backgroundColor:"skyblue", borderColor:"black"}}
+            />
 
-      <button type="submit">Save</button>
+        </div>
+          
     </form>
   );
 };
