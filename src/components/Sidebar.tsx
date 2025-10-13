@@ -1,11 +1,8 @@
 import React from "react";
+import { Button } from "primereact/button";
 
 type Module = "Finance" | "Salawat" | null;
-type SubModule =
-  | "Transactions"
-  | "Summary"
-  | "SalawatFunctions"
-  | null;
+type SubModule = "Transactions" | "TransactionDetails" | "Summary" | "SalawatFunctions" | null;
 
 interface SidebarProps {
   selectedModule: Module;
@@ -22,58 +19,98 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   return (
     <div
-      className="card flex"
+      className="card flex flex-column gap-3 p-3"
+      style={{
+        width: "240px",
+        backgroundColor: "#f9fafb",
+        borderRight: "1px solid #ddd",
+        height: "100vh",
+      }}
     >
-      <h3>Modules</h3>
-      <ul style={{ listStyle: "none", padding: 0 }}>
+      <h3 className="text-lg font-semibold">Modules</h3>
+
+      {/* Main Modules */}
+      <div className="flex flex-column gap-2">
         {["Finance", "Salawat"].map((mod) => (
-          <li
+          <Button
             key={mod}
+            label={mod}
+            onClick={() => onModuleSelect(mod as Module)}
+            className="p-button-outlined p-button-sm"
             style={{
-              cursor: "pointer",
-              marginBottom: "10px",
+              backgroundColor:
+                selectedModule === mod ? "#007ad9" : "transparent",
+              color: selectedModule === mod ? "white" : "#333",
+              borderColor: "#007ad9",
               fontWeight: selectedModule === mod ? "bold" : "normal",
             }}
-            onClick={() => onModuleSelect(mod as Module)}
-          >
-            {mod}
-          </li>
+          />
         ))}
-      </ul>
+      </div>
 
       {/* Submodules */}
       {selectedModule === "Finance" && (
-        <>
-          <h4>Finance Options</h4>
-          <ul style={{ listStyle: "none", paddingLeft: "10px" }}>
-            <li
-              style={{ cursor: "pointer", marginBottom: "5px" }}
-              onClick={() => onSubModuleSelect("Transactions")}
-            >
-              Transactions
-            </li>
-            <li
-              style={{ cursor: "pointer", marginBottom: "5px" }}
-              onClick={() => onSubModuleSelect("Summary")}
-            >
-              Summary
-            </li>
-          </ul>
-        </>
+        <div className="flex flex-column gap-2 mt-4">
+          <h4 className="text-md font-medium mb-2">Finance Options</h4>
+
+          <Button
+            label="Transactions"
+            onClick={() => onSubModuleSelect("Transactions")}
+            className="p-button-text p-button-sm"
+            style={{
+              backgroundColor:
+                selectedSubModule === "Transactions" ? "#007ad9" : "transparent",
+              color:
+                selectedSubModule === "Transactions" ? "white" : "#007ad9",
+            }}
+          />
+
+          <Button
+            label="Transaction Details"
+            onClick={() => onSubModuleSelect("TransactionDetails")}
+            className="p-button-text p-button-sm"
+            style={{
+              backgroundColor:
+                selectedSubModule === "TransactionDetails"
+                  ? "#007ad9"
+                  : "transparent",
+              color:
+                selectedSubModule === "TransactionDetails"
+                  ? "white"
+                  : "#007ad9",
+            }}
+          />
+
+          <Button
+            label="Summary"
+            onClick={() => onSubModuleSelect("Summary")}
+            className="p-button-text p-button-sm"
+            style={{
+              backgroundColor:
+                selectedSubModule === "Summary" ? "#007ad9" : "transparent",
+              color: selectedSubModule === "Summary" ? "white" : "#007ad9",
+            }}
+          />
+        </div>
       )}
 
       {selectedModule === "Salawat" && (
-        <>
-          <h4>Salawat Options</h4>
-          <ul style={{ listStyle: "none", paddingLeft: "10px" }}>
-            <li
-              style={{ cursor: "pointer", marginBottom: "5px" }}
-              onClick={() => onSubModuleSelect("SalawatFunctions")}
-            >
-              Salawat Functions
-            </li>
-          </ul>
-        </>
+        <div className="flex flex-column gap-2 mt-4">
+          <h4 className="text-md font-medium mb-2">Salawat Options</h4>
+          <Button
+            label="Salawat Functions"
+            onClick={() => onSubModuleSelect("SalawatFunctions")}
+            className="p-button-text p-button-sm"
+            style={{
+              backgroundColor:
+                selectedSubModule === "SalawatFunctions"
+                  ? "#007ad9"
+                  : "transparent",
+              color:
+                selectedSubModule === "SalawatFunctions" ? "white" : "#007ad9",
+            }}
+          />
+        </div>
       )}
     </div>
   );

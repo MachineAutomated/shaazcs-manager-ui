@@ -1,5 +1,6 @@
 import React from "react";
 import TransactionForm from "./TransactionForm";
+import TransactionDetails from "./TransactionDetails";
 import Summary from "./Summary";
 import type { Module, SubModule } from "./sidebar";
 
@@ -15,6 +16,8 @@ const Content: React.FC<ContentProps> = ({ selectedModule, selectedSubModule }) 
         return <TransactionForm />;
       case "Summary":
         return <Summary />;
+      case "TransactionDetails":
+        return <TransactionDetails/>
       default:
         return <p>Please select a Finance submodule.</p>;
     }

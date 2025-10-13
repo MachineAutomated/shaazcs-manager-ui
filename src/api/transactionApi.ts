@@ -8,3 +8,7 @@ export async function saveTransaction(data: any) {
 export async function getSummary() {
     return axios.get(`${API_BASE_URL}/summary?year=2025&month=10`);
   }
+
+export async function getTransactionsDetialsByMonth(year: Number, month: Number) {
+    return axios.get(`${API_BASE_URL}/transactionDetails?year=${year}&month=${month}`)
+  }
