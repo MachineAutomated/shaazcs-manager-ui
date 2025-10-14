@@ -21,10 +21,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     <div
       className="card flex flex-column gap-3 p-3"
       style={{
-        width: "240px",
+        width: "100%",
         backgroundColor: "#f9fafb",
         borderRight: "1px solid #ddd",
-        height: "100vh",
+        height: "100%",
       }}
     >
       <h3 className="text-lg font-semibold">Modules</h3>

@@ -14,7 +14,7 @@ function App() {
     <div className="card flex flex-wrap gap-3 p-fluid">
       {/* <header className="App-header"> */}
       
-    <Splitter style={{ height: '600px', width: '1200px'}}>
+    <Splitter style={{ height: '700px', width: '1200px'}}>
       <SplitterPanel className="flex align-items-center justify-content-center" size={25} minSize={10}>
          <Sidebar 
           selectedModule={selectedModule}
@@ -26,7 +26,9 @@ function App() {
           onSubModuleSelect={setSelectedSubModule}
          />
       </SplitterPanel>
-      <SplitterPanel className="flex align-items-center justify-content-center" size={75}>
+      <SplitterPanel className="flex align-items-center justify-content-center" size={75}
+       
+      >
         <Content
           selectedModule={selectedModule}
           selectedSubModule={selectedSubModule}
