@@ -5,6 +5,10 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
+  "engines": {
+        "node": ">=22.8.0",
+        "npm": ">=10.8.2"
+    },
   "type": "module",
   "scripts": {
     "dev": "vite",
