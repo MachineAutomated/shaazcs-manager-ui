@@ -1,8 +1,7 @@
-import React from "react";
 import TransactionForm from "./TransactionForm";
 import TransactionDetails from "./TransactionDetails";
 import Summary from "./Summary";
-import type { Module, SubModule } from "./sidebar";
+import type { Module, SubModule } from "./Sidebar";
 
 interface ContentProps {
   selectedModule: Module;

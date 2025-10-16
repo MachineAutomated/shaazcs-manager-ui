@@ -1,10 +1,9 @@
-import React,{ useState } from 'react';
+import { useState } from 'react';
 import './App.css';
-import type { Module, SubModule } from "./components/sidebar";
+import type { Module, SubModule } from "./components/Sidebar";
 import { Splitter, SplitterPanel } from 'primereact/splitter';
-// import { Menu } from 'primereact/menu';
 import Content from "./components/Content";
-import Sidebar from './components/sidebar';
+import Sidebar from './components/Sidebar';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 
 function App() {

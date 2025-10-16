@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "primereact/button";
 
 type Module = "Finance" | "Salawat" | null;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "primereact/card";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -42,6 +42,7 @@ const Summary: React.FC = () => {
         setSummary(transformed);
         setTotals(data.TotalSummary || null);
       } catch (err) {
+        console.error("Error fetching summary:", err);
         setError("Failed to fetch summary");
       } finally {
         setLoading(false);
