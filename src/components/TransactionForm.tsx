@@ -30,17 +30,12 @@ const TransactionForm: React.FC = () => {
         const fetchCategories = async () => {
             try {
                 const response = await getCategories();
-                const map = objectToMap(response.data);
+                const map: Map<number, string> = objectToMap(response.data);
                 // Convert Map → array for PrimeReact dropdown
                 const options: CategoryOption[] = Array.from(map, ([value, label]) => ({
                   label,
                   value,
                 }));
-                // When mapping backend response:
-        //         const options: CategoryOption[] = (response.data || []).map((c: any) => ({
-        //           label: String(c.label ?? c.name ?? "Unknown"), // ensure string
-        //           value: Number(c.value ?? c.id ?? 0)
-        // }));
                 setCategories(options);
             } catch (err) {
                 console.error("Error fetching categories:", err);
