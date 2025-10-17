@@ -4,7 +4,6 @@ import { getCategories } from "../api/utilitiesApi";
 import { Checkbox } from 'primereact/checkbox';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
-import { objectToMap } from "../utils/utility";
 import { Calendar } from 'primereact/calendar';
 import { FloatLabel } from 'primereact/floatlabel';
 import { Button } from 'primereact/button';
@@ -139,7 +138,7 @@ const handleDateChange = (e: any) => {
             <Checkbox 
               className="ml-2"
               id='updateIfExistsCheck' 
-              onChange={(e) => setUpdateIfExists(e.target.checked)} 
+              onChange={(e) => setUpdateIfExists(!!e.target.checked)} 
               checked={UpdateIfExists}
               style={{marginLeft:"0px"}}
             >
@@ -152,7 +151,7 @@ const handleDateChange = (e: any) => {
             <Checkbox
               className="ml-2"
               id='useCreatedAtCheck' 
-              onChange={(e) => setUseCreatedAt(e.target.checked)} 
+              onChange={(e) => setUseCreatedAt(!!e.target.checked)} 
               checked={UseCreatedAt}
               style={{marginLeft:"30%"}}
             >
