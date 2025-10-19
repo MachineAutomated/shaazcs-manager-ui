@@ -35,7 +35,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PIPELINE_PAT }}
         run: |
           set -e  # 🔹 stops on first error
-          
+
+          echo "Checking npm authentication identity..."
+          npm whoami --registry=https://npm.pkg.github.com || echo "❌ npm whoami failed"
+
           PACKAGE_NAME=$(node -p "require('./package.json').name")
           OWNER="MachineAutomated"
           API_URL="https://api.github.com/users/$OWNER/packages/npm/$PACKAGE_NAME/versions"
@@ -43,13 +46,14 @@ jobs:
           echo "Fetching versions for $PACKAGE_NAME..."
           RESPONSE=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github+json" "$API_URL")
+
           echo "$RESPONSE" | jq -r '.[].id' | while read id; do
-            if [ -n "$id" ]; then
-              echo "Deleting package version id $id"
-              curl -s -X DELETE -H "Authorization: Bearer $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              "$API_URL/$id" || exit 1
-            fi
+          if [ -n "$id" ]; then
+            echo "Deleting package version id $id"
+            curl -s -X DELETE -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "$API_URL/$id" || exit 1
+          fi
           done
 
       # -----------------------------
@@ -61,11 +65,14 @@ jobs:
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.PIPELINE_PAT }}" >> ~/.npmrc
           echo "registry=https://npm.pkg.github.com/" >> ~/.npmrc
 
-       #- name: Verify npm authentication
-       # run: npm whoami --registry=https://npm.pkg.github.com/
+      - name: Verify npm authentication
+        run: |
+          echo "Verifying npm user..."
+          npm whoami --registry=https://npm.pkg.github.com
 
       - name: Publish npm package
         run: npm publish --access public
+
 
       # -----------------------------
       # 🧹 DELETE OLD GHCR IMAGE
