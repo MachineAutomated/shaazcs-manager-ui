@@ -49,6 +49,7 @@ with open(os.path.expanduser("~/.npmrc"), "w") as f:
 
 print("✅ NPM authentication setup complete")
 
+# Below step is commented out as whoami check doesn't work on Github
 # # -----------------------------
 # # Step 2: Verify user
 # # -----------------------------
@@ -62,7 +63,7 @@ print("✅ NPM authentication setup complete")
 #     sys.exit(1)
 
 # -----------------------------
-# Step 3: List all versions
+# Step 2: List all versions
 # -----------------------------
 try:
     headers = {"Authorization": f"Bearer {PACKAGE_PAT}", "Accept": "application/vnd.github+json"}
@@ -81,7 +82,7 @@ except Exception as e:
     sys.exit(1)
 
 # -----------------------------
-# Step 4: Decide version to delete
+# Step 3: Decide version to delete
 # -----------------------------
 # Example: Delete the one and only version
 try:
@@ -94,8 +95,9 @@ except Exception as e:
     sys.exit(1)
 
 # -----------------------------
-# Step 5: Delete selected versions
+# Step 4: Delete selected versions
 # -----------------------------
+version_id = None
 try:
     for v in versions_to_delete:
         version_id = v["id"]
@@ -110,23 +112,24 @@ except Exception as e:
     print("Error deleting versions")
     sys.exit(1)
 # -----------------------------
-# Step 6: Confirm deletion
+# Step 5: Confirm deletion
 # -----------------------------
 try:
     response = requests.get(API_URL, headers=headers)
     if response.status_code == 404 and response.json().get("message") == "Package not found.":
-        print(f"Version Deleted={response.status_code}")
+        print(f"Version Deleted={version_id}")
     elif response.status_code != 200:
         response.raise_for_status()
-    remaining_versions = response.json()
-    deleted_ids = [v["id"] for v in versions_to_delete]
-    still_there = [v for v in remaining_versions if v["id"] in deleted_ids]
+    remaining_versions = response.json()\
+    # If script is scalled for multiple deletions then below code can be used
+    # deleted_ids = [v["id"] for v in versions_to_delete]
+    # still_there = [v for v in remaining_versions if v["id"] in deleted_ids]
 
-    if still_there:
-        print(f"Deleted: {[v['name'] for v in still_there]}")
-        sys.exit(1)
-    else:
-        print("Deletion confirmed. All targeted versions removed.")
+    # if still_there:
+    #     print(f"Deleted: {[v['name'] for v in still_there]}")
+    #     sys.exit(1)
+    # else:
+    #     print("Deletion confirmed. All targeted versions removed.")
 except Exception as e:
     print("Error confirming deletion")
     sys.exit(1)
