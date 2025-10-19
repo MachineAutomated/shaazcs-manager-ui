@@ -17,7 +17,7 @@ import requests
 # -----------------------------
 # Step 0: Configuration
 # -----------------------------
-PACKAGE_PAT = os.environ.get("PIPELINE_PAT")  # Your GitHub PAT for npm
+PACKAGE_PAT = os.environ.get("GITHUB_PERSONAL_PKG_RW_TOKEN")  # Your GitHub PAT for npm
 PACKAGE_JSON = "package.json"
 OWNER = "MachineAutomated"
 REGISTRY = "https://npm.pkg.github.com"
