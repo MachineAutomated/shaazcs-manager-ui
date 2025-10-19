@@ -3,11 +3,10 @@
 # -----------------------------
 """
 Step 1: Authenticate with NPM using a token.
-Step 2: Check the user with whomai
-Step 3: List all versions of the specified NPM package.
-Step 4: Decide version to delete
-Step 5: Delete the specified version of the NPM package.
-Step 6: Confirm deletion by listing and verifying the deleted version.
+Step 2: List all versions of the specified NPM package.
+Step 3: Decide version to delete
+Step 4: Delete the specified version of the NPM package.
+Step 5: Confirm deletion by listing and verifying the deleted version.
 """
 
 

@@ -44,3 +44,9 @@ jobs:
       # -----------------------------
       - name: Delete old npm package
         run: python scripts/delete_old_npm_pkg.py
+
+      # -----------------------------
+      # Publish New NPM package (Python)
+      # -----------------------------
+      - name: Publish New npm package
+        run: python scripts/publish_new_pkg.py
