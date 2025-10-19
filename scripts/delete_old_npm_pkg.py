@@ -22,7 +22,6 @@ import sys
 # -----------------------------
 PACKAGE_JSON = "package.json"
 PACKAGE_PAT = os.environ.get("PIPELINE_PAT")  # Your GitHub PAT for npm
-print(PACKAGE_PAT)
 OWNER = "MachineAutomated"
 REGISTRY = "https://npm.pkg.github.com"
 
@@ -50,17 +49,17 @@ with open(os.path.expanduser("~/.npmrc"), "w") as f:
 
 print("✅ NPM authentication setup complete")
 
-# -----------------------------
-# Step 2: Verify user
-# -----------------------------
-try:
-    subprocess.run(
-        ["npm", "whoami", "--registry", REGISTRY],
-        check=True
-    )
-except subprocess.CalledProcessError:
-    print("❌ npm authentication failed")
-    sys.exit(1)
+# # -----------------------------
+# # Step 2: Verify user
+# # -----------------------------
+# try:
+#     subprocess.run(
+#         ["npm", "whoami", "--registry", REGISTRY],
+#         check=True
+#     )
+# except subprocess.CalledProcessError:
+#     print("❌ npm authentication failed")
+#     sys.exit(1)
 
 # -----------------------------
 # Step 3: List all versions
