@@ -22,6 +22,7 @@ import sys
 # -----------------------------
 PACKAGE_JSON = "package.json"
 PACKAGE_PAT = os.environ.get("PIPELINE_PAT")  # Your GitHub PAT for npm
+print(PACKAGE_PAT)
 OWNER = "MachineAutomated"
 REGISTRY = "https://npm.pkg.github.com"
 
