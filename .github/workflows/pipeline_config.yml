@@ -2,10 +2,10 @@ name: Build, Publish, and Push Docker Image
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
 
 jobs:
-  pipeline:
+  build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -14,9 +14,9 @@ jobs:
       PIPELINE_PAT: ${{ secrets.PIPELINE_PAT }}  # PAT with Read/Write/Delete
 
     steps:
-      # -----------------------------
-      # Checkout repository
-      # -----------------------------
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -36,20 +36,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      # -----------------------------
-      # Setup Node.js
-      # -----------------------------
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-
-      # -----------------------------
-      # Install npm dependencies
-      # -----------------------------
-      - name: Install dependencies
-        run: npm ci
 
       # -----------------------------
       # Delete old NPM package (Python)
