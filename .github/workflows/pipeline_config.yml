@@ -32,7 +32,7 @@ jobs:
       # -----------------------------
       - name: Delete old versions from GitHub Packages
         env: 
-          GITHUB_TOKEN: ${{ secrets.PIPELINE_PAT }}
+          GITHUB_TOKEN: ${{ secrets.PIPELINE_PAT_ALL_ACCESS }}
         run: |
           set -e  # 🔹 stops on first error
 
@@ -62,7 +62,7 @@ jobs:
       - name: Configure npm for GitHub Packages
         run: |
           echo "@machineautomated:registry=https://npm.pkg.github.com" > ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.PIPELINE_PAT }}" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.PIPELINE_PAT_ALL_ACCESS }}" >> ~/.npmrc
           echo "registry=https://npm.pkg.github.com/" >> ~/.npmrc
 
       - name: Verify npm authentication
@@ -82,10 +82,10 @@ jobs:
           REPO=${{ github.repository }}
           echo "Deleting old Docker image versions from GHCR for $REPO"
           VERSIONS_URL="https://api.github.com/orgs/${{ github.repository_owner }}/packages/container/shaazcs-manager-ui/versions"
-          curl -s -H "Authorization: Bearer ${{ secrets.PIPELINE_PAT }}" "$VERSIONS_URL" \
+          curl -s -H "Authorization: Bearer ${{ secrets.PIPELINE_PAT_ALL_ACCESS }}" "$VERSIONS_URL" \
             | jq '.[].id' | while read id; do
               echo "Deleting image version id $id"
-              curl -X DELETE -H "Authorization: Bearer ${{ secrets.PIPELINE_PAT }}" \
+              curl -X DELETE -H "Authorization: Bearer ${{ secrets.PIPELINE_PAT_ALL_ACCESS }}" \
                 "$VERSIONS_URL/$id"
             done
 
@@ -95,6 +95,6 @@ jobs:
       - name: Build and push Docker image
         run: |
           IMAGE_NAME=ghcr.io/${{ github.repository }}:1.0.0
-          echo ${{ secrets.PIPELINE_PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo ${{ secrets.PIPELINE_PAT_ALL_ACCESS }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
