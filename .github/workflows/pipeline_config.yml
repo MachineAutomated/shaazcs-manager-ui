@@ -11,7 +11,8 @@ jobs:
       contents: read
       packages: write
     env:
-      PIPELINE_PAT: ${{ secrets.PIPELINE_PAT }}  # PAT with Read/Write/Delete
+      PIPELINE_PAT: ${{ secrets.PIPELINE_PAT }}  # PAT with Read/Write/Delete/Repo
+      GH_PERSONAL_PKG_RW_TOKEN: ${{ secrets.GH_PERSONAL_PKG_RW_TOKEN }}  # PAT with Publish npm packages
 
     steps:
       - name: Checkout repo

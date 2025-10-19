@@ -17,13 +17,13 @@ import requests
 # -----------------------------
 # Step 0: Configuration
 # -----------------------------
-PACKAGE_PAT = os.environ.get("GH_PERSONAL_PKG_RW_TOKEN")  # Your GitHub PAT for npm
+PIPELINE_PKG_PAT = os.environ.get("GH_PERSONAL_PKG_RW_TOKEN")  # Your GitHub PAT for npm
 PACKAGE_JSON = "package.json"
 OWNER = "MachineAutomated"
 REGISTRY = "https://npm.pkg.github.com"
 
-if not PACKAGE_PAT:
-    print("❌ PIPELINE_PAT environment variable not set")
+if not PIPELINE_PKG_PAT:
+    print("❌ GH_PERSONAL_PKG_RW_TOKEN environment variable not set")
     sys.exit(1)
 
 # -----------------------------
@@ -45,7 +45,7 @@ except Exception as e:
 try:
     npmrc_content = f"""
 @{OWNER.lower()}:registry={REGISTRY}
-//npm.pkg.github.com/:_authToken={PACKAGE_PAT}
+//npm.pkg.github.com/:_authToken={PIPELINE_PKG_PAT}
 registry={REGISTRY}/
 """
     with open(os.path.expanduser("~/.npmrc"), "w") as f:
@@ -73,7 +73,7 @@ except subprocess.CalledProcessError as e:
 try:
     API_URL = f"https://api.github.com/users/{OWNER}/packages/npm/{package_name}/versions"
     headers = {
-        "Authorization": f"Bearer {PACKAGE_PAT}",
+        "Authorization": f"Bearer {PIPELINE_PKG_PAT}",
         "Accept": "application/vnd.github+json"
     }
 
