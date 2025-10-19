@@ -30,17 +30,27 @@ jobs:
       # -----------------------------
       # 🔥 DELETE OLD NPM PACKAGE
       # -----------------------------
-      - name: Delete old npm package version
+      - name: Delete old versions from GitHub Packages
+        env: 
+          GITHUB_TOKEN: ${{ secrets.PIPELINE_PAT }}
         run: |
+          set -e  # 🔹 stops on first error
+          
           PACKAGE_NAME=$(node -p "require('./package.json').name")
-          echo "Deleting old versions of $PACKAGE_NAME from GitHub Packages..."
-          VERSIONS_URL="https://api.github.com/users/${{ github.repository_owner }}/packages/npm/$PACKAGE_NAME/versions"
-          curl -s -H "Authorization: Bearer ${{ secrets.PIPELINE_PAT }}" "$VERSIONS_URL" \
-            | jq '.[].id' | while read id; do
+          OWNER="MachineAutomated"
+          API_URL="https://api.github.com/users/$OWNER/packages/npm/$PACKAGE_NAME/versions"
+
+          echo "Fetching versions for $PACKAGE_NAME..."
+          RESPONSE=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" "$API_URL")
+          echo "$RESPONSE" | jq -r '.[].id' | while read id; do
+            if [ -n "$id" ]; then
               echo "Deleting package version id $id"
-              curl -X DELETE -H "Authorization: Bearer ${{ secrets.PIPELINE_PAT }}" \
-                "$VERSIONS_URL/$id"
-            done
+              curl -s -X DELETE -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "$API_URL/$id" || exit 1
+            fi
+          done
 
       # -----------------------------
       # 📦 PUBLISH NPM PACKAGE
