@@ -2,99 +2,45 @@ name: Build, Publish, and Push Docker Image
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
-  build-and-push:
+  pipeline:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    env:
+      PIPELINE_PAT: ${{ secrets.PIPELINE_PAT }}  # PAT with Read/Write/Delete
 
     steps:
+      # -----------------------------
+      # Checkout repository
+      # -----------------------------
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      # -----------------------------
+      # Setup Python
+      # -----------------------------
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # -----------------------------
+      # Setup Node.js
+      # -----------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.8.0'   # match your engines.node
-          cache: 'npm'
+          node-version: "18"
 
+      # -----------------------------
+      # Install npm dependencies
+      # -----------------------------
       - name: Install dependencies
         run: npm ci
 
-      - name: Build project
-        run: npm run build
-
       # -----------------------------
-      # 🔥 DELETE OLD NPM PACKAGE
+      # Delete old NPM package (Python)
       # -----------------------------
-      - name: Delete old versions from GitHub Packages
-        env: 
-          GITHUB_TOKEN: ${{ secrets.PIPELINE_PAT_ALL_ACCESS }}
-        run: |
-          set -e  # 🔹 stops on first error
-
-          echo "Checking npm authentication identity..."
-          npm whoami --registry=https://npm.pkg.github.com || echo "❌ npm whoami failed"
-
-          PACKAGE_NAME=$(node -p "require('./package.json').name")
-          OWNER="MachineAutomated"
-          API_URL="https://api.github.com/users/$OWNER/packages/npm/$PACKAGE_NAME/versions"
-
-          echo "Fetching versions for $PACKAGE_NAME..."
-          RESPONSE=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github+json" "$API_URL")
-
-          echo "$RESPONSE" | jq -r '.[].id' | while read id; do
-          if [ -n "$id" ]; then
-            echo "Deleting package version id $id"
-            curl -s -X DELETE -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            "$API_URL/$id" || exit 1
-          fi
-          done
-
-      # -----------------------------
-      # 📦 PUBLISH NPM PACKAGE
-      # -----------------------------
-      - name: Configure npm for GitHub Packages
-        run: |
-          echo "@machineautomated:registry=https://npm.pkg.github.com" > ~/.npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.PIPELINE_PAT_ALL_ACCESS }}" >> ~/.npmrc
-          echo "registry=https://npm.pkg.github.com/" >> ~/.npmrc
-
-      - name: Verify npm authentication
-        run: |
-          echo "Verifying npm user..."
-          npm whoami --registry=https://npm.pkg.github.com
-
-      - name: Publish npm package
-        run: npm publish --access public
-
-
-      # -----------------------------
-      # 🧹 DELETE OLD GHCR IMAGE
-      # -----------------------------
-      - name: Delete old GHCR image version
-        run: |
-          REPO=${{ github.repository }}
-          echo "Deleting old Docker image versions from GHCR for $REPO"
-          VERSIONS_URL="https://api.github.com/orgs/${{ github.repository_owner }}/packages/container/shaazcs-manager-ui/versions"
-          curl -s -H "Authorization: Bearer ${{ secrets.PIPELINE_PAT_ALL_ACCESS }}" "$VERSIONS_URL" \
-            | jq '.[].id' | while read id; do
-              echo "Deleting image version id $id"
-              curl -X DELETE -H "Authorization: Bearer ${{ secrets.PIPELINE_PAT_ALL_ACCESS }}" \
-                "$VERSIONS_URL/$id"
-            done
-
-      # -----------------------------
-      # 🐳 BUILD AND PUSH DOCKER IMAGE
-      # -----------------------------
-      - name: Build and push Docker image
-        run: |
-          IMAGE_NAME=ghcr.io/${{ github.repository }}:1.0.0
-          echo ${{ secrets.PIPELINE_PAT_ALL_ACCESS }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker build -t $IMAGE_NAME .
-          docker push $IMAGE_NAME
+      - name: Delete old npm package
+        run: python scripts/delete_old_npm.py
