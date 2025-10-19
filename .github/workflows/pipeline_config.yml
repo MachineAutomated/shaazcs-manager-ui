@@ -41,4 +41,4 @@ jobs:
       # Delete old NPM package (Python)
       # -----------------------------
       - name: Delete old npm package
-        run: python scripts/delete_old_npm.py
+        run: python scripts/delete_old_npm_pkg.py
