@@ -61,8 +61,8 @@ jobs:
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.PIPELINE_PAT }}" >> ~/.npmrc
           echo "registry=https://npm.pkg.github.com/" >> ~/.npmrc
 
-      - name: Verify npm authentication
-        run: npm whoami --registry=https://npm.pkg.github.com/
+       #- name: Verify npm authentication
+       # run: npm whoami --registry=https://npm.pkg.github.com/
 
       - name: Publish npm package
         run: npm publish --access public
