@@ -55,10 +55,17 @@ jobs:
       # -----------------------------
       # 📦 PUBLISH NPM PACKAGE
       # -----------------------------
+      - name: Configure npm for GitHub Packages
+        run: |
+          echo "@machineautomated:registry=https://npm.pkg.github.com" > ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.PIPELINE_PAT }}" >> ~/.npmrc
+          echo "registry=https://npm.pkg.github.com/" >> ~/.npmrc
+
+      - name: Verify npm authentication
+        run: npm whoami --registry=https://npm.pkg.github.com/
+
       - name: Publish npm package
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.PIPELINE_PAT }}
 
       # -----------------------------
       # 🧹 DELETE OLD GHCR IMAGE
