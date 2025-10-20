@@ -56,13 +56,14 @@ def main():
     # -----------------------------
     try:
         print("\n🔹 Step 3: Build Docker Image")
+        docker_owner = os.getenv("DOCKERHUB_OWNER").lower()
         image_name = os.getenv("DOCKER_IMAGE_NAME", "shaazcs-manager-ui")
         image_tag = os.getenv("DOCKER_IMAGE_TAG", "latest")
         token = os.getenv("GH_PERSONAL_PKG_RW_TOKEN")
 
-        build_command = f"docker build -t {image_name}:{image_tag} --build-arg GITHUB_TOKEN={token} ."
-        run_command(build_command, f"Building Docker image {image_name}:{image_tag}")
-        print(f"✅ Docker image built successfully: {image_name}:{image_tag}")
+        build_command = f"docker build -t ghcr.io/{docker_owner}/{image_name}:{image_tag} --build-arg GITHUB_TOKEN={token} ."
+        run_command(build_command, f"Building Docker image ghcr.io/{docker_owner}/{image_name}:{image_tag}")
+        print(f"✅ Docker image built successfully: ghcr.io/{docker_owner}/{image_name}:{image_tag}")
     except Exception as e:
         print(f"❌ Docker image build failed: {e}")
         sys.exit(1)
