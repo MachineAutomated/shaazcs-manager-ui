@@ -15,7 +15,7 @@ jobs:
       GH_PERSONAL_PKG_RW_TOKEN: ${{ secrets.GH_PERSONAL_PKG_RW_TOKEN }}  # PAT with Publish npm packages
       DOCKER_IMAGE_NAME: shaazcs-manager-ui
       DOCKER_IMAGE_TAG: 1.0.0 # We can set this dynamically as needed
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
     steps:
       - name: Checkout repo
