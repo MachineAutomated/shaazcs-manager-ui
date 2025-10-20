@@ -16,6 +16,7 @@ jobs:
       DOCKER_IMAGE_NAME: shaazcs-manager-ui
       DOCKER_IMAGE_TAG: 1.0.0 # We can set this dynamically as needed
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_OWNER: MachineAutomated
 
     steps:
       - name: Checkout repo

@@ -27,10 +27,11 @@ def main():
 
     # Environment Variables
     docker_username = os.getenv("DOCKERHUB_USERNAME")
+    docker_owner = os.getenv("DOCKERHUB_OWNER").lower()
     docker_token = os.getenv("GH_PERSONAL_PKG_RW_TOKEN")
     image_name = os.getenv("DOCKER_IMAGE_NAME", "shaazcs-manager-ui")
     image_tag = os.getenv("DOCKER_IMAGE_TAG", "latest")
-    full_image_name = f"ghcr.io/{docker_username}/{image_name}:{image_tag}"
+    full_image_name = f"ghcr.io/{docker_owner}/{image_name}:{image_tag}"
 
     # -----------------------------
     # Step 1: Docker PUSH the built image to GitHub Container Registry
