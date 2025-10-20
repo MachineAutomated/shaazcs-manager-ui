@@ -23,7 +23,16 @@ jobs:
         run: |
           docker system prune -af || true
           rm -rf ~/.npm
-          
+
+      - name: Check disk space
+        run: df -h
+
+      - name: Check Docker usage
+        run: docker system df
+
+      - name: Check running processes
+        run: ps aux | grep npm
+
       - name: Checkout repo
         uses: actions/checkout@v4
 
