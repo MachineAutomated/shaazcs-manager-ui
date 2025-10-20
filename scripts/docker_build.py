@@ -34,8 +34,20 @@ def main():
     # -----------------------------
     try:
         print("\n🔹 Step 1: Docker Setup")
+        docker_owner = os.getenv("DOCKERHUB_OWNER").lower()
+        docker_username = os.getenv("DOCKERHUB_USERNAME")
+        image_name = os.getenv("DOCKER_IMAGE_NAME", "shaazcs-manager-ui")
+        image_tag = os.getenv("DOCKER_IMAGE_TAG", "latest")
+        token = os.getenv("GH_PERSONAL_PKG_RW_TOKEN")
         run_command("docker --version", "Checking Docker version")
         run_command("docker info", "Verifying Docker daemon status")
+
+        if not docker_username or not token:
+            raise ValueError("DOCKERHUB_USERNAME or GH_PERSONAL_PKG_RW_TOKEN environment variables missing.")
+
+        # Login before push
+        login_cmd = f"echo {token} | docker login ghcr.io -u {docker_username} --password-stdin"
+        run_command(login_cmd, "Logging into GitHub Container Registry")
     except Exception as e:
         print(f"❌ Failed during Docker setup: {e}")
         sys.exit(1)
@@ -57,10 +69,6 @@ def main():
     # -----------------------------
     try:
         print("\n🔹 Step 3: Build Docker Image")
-        docker_owner = os.getenv("DOCKERHUB_OWNER").lower()
-        image_name = os.getenv("DOCKER_IMAGE_NAME", "shaazcs-manager-ui")
-        image_tag = os.getenv("DOCKER_IMAGE_TAG", "latest")
-        token = os.getenv("GH_PERSONAL_PKG_RW_TOKEN")
 
         build_command = f"docker build -t ghcr.io/{docker_owner}/{image_name}:{image_tag} --build-arg GITHUB_TOKEN={token} ."
         run_command(build_command, f"Building Docker image ghcr.io/{docker_owner}/{image_name}:{image_tag}")
