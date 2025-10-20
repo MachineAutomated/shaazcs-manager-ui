@@ -5,6 +5,7 @@
 Step 1: Docker setup
 Step 2: Verify Docker File Exists
 Step 3: Build Docker Image
+Step 4: Verify Built Image and Tag
 """
 
 import subprocess
@@ -66,6 +67,25 @@ def main():
         print(f"✅ Docker image built successfully: ghcr.io/{docker_owner}/{image_name}:{image_tag}")
     except Exception as e:
         print(f"❌ Docker image build failed: {e}")
+        sys.exit(1)
+
+    # -----------------------------
+    # Step 4: Verify Built Image and Tag
+    # -----------------------------
+
+    try:
+        print("\n🔹 Step 4: Verify Built Image and Tag")
+        docker_images_output = run_command("docker images", "Listing all Docker images")
+        print(docker_images_output)
+        image_identifier = f"ghcr.io/{docker_owner}/{image_name}"
+        if image_identifier in docker_images_output and image_tag in docker_images_output:
+            print(f"✅ Verified: Docker image '{image_identifier}:{image_tag}' exists locally.")
+        else:
+            print(f"⚠️ Verification failed: Image '{image_identifier}:{image_tag}' not found in local registry.")
+            sys.exit(1)
+
+    except Exception as e:
+        print(f"❌ Failed to verify built Docker image: {e}")
         sys.exit(1)
 
     print("\n🎉 Docker build stage completed successfully!")
