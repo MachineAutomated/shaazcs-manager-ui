@@ -1,7 +1,7 @@
 
 ##Munnu
 # ====== Stage 1: Build the app ======
-FROM ghcr.io/actions/node:18-alpine AS builder
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +19,7 @@ RUN npm install && npm run build
 
 
 # ====== Stage 2: Serve with Nginx ======
-FROM ghcr.io/actions/nginx:alpine
+FROM nginx:alpine
 
 # Create a custom Nginx config to serve on port 5173
 RUN rm /etc/nginx/conf.d/default.conf
