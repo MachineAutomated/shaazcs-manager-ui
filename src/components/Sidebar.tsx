@@ -1,7 +1,7 @@
 import { Button } from "primereact/button";
 
 type Module = "Finance" | "Salawat" | null;
-type SubModule = "Transactions" | "TransactionDetails" | "Summary" | "SalawatFunctions" | null;
+type SubModule = "Transactions" | "TransactionDetails" | "Summary" | "MonthEnd" | "SalawatFunctions" | null;
 
 interface SidebarProps {
   selectedModule: Module;
@@ -90,6 +90,18 @@ const Sidebar: React.FC<SidebarProps> = ({
               color: selectedSubModule === "Summary" ? "white" : "#007ad9",
             }}
           />
+
+          <Button
+            label="Month End"
+            onClick={() => onSubModuleSelect("MonthEnd")}
+            className="p-button-text p-button-sm"
+            style={{
+              backgroundColor:
+                selectedSubModule === "MonthEnd" ? "#007ad9" : "transparent",
+              color: selectedSubModule === "MonthEnd" ? "white" : "#007ad9",
+            }}
+          />
+
         </div>
       )}
 

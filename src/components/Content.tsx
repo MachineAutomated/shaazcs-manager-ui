@@ -1,6 +1,7 @@
 import TransactionForm from "./TransactionForm";
 import TransactionDetails from "./TransactionDetails";
 import Summary from "./Summary";
+import MonthEnd from "./MonthEnd";
 import type { Module, SubModule } from "./Sidebar";
 
 interface ContentProps {
@@ -17,6 +18,8 @@ const Content: React.FC<ContentProps> = ({ selectedModule, selectedSubModule }) 
         return <Summary />;
       case "TransactionDetails":
         return <TransactionDetails/>
+      case "MonthEnd":
+        return <MonthEnd/>;
       default:
         return <p>Please select a Finance submodule.</p>;
     }

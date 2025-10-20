@@ -1,7 +1,7 @@
 
 ##Munnu
 # ====== Stage 1: Build the app ======
-FROM node:18-alpine AS builder
+FROM ghcr.io/actions/node:18-alpine AS builder
 
 WORKDIR /app
 
