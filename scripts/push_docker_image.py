@@ -40,14 +40,27 @@ def main():
 
     try:
         print("\n🔹 Step 1: Verify Built Image and Tag")
-        docker_images_output = run_command("docker images", "Listing all Docker images")
-        print(docker_images_output)
-        image_identifier = f"ghcr.io/{docker_owner}/{image_name}"
-        if image_identifier in docker_images_output and image_tag in docker_images_output:
-            print(f"✅ Verified: Docker image '{image_identifier}:{image_tag}' exists locally.")
+        images_output = run_command("docker images --no-trunc", "Listing all Docker images")
+        print(images_output)
+        # image_identifier = f"ghcr.io/{docker_owner}/{image_name}"
+        # if image_identifier in docker_images_output and image_tag in docker_images_output:
+        #     print(f"✅ Verified: Docker image '{image_identifier}:{image_tag}' exists locally.")
+        # else:
+        #     print(f"⚠️ Verification failed: Image '{image_identifier}:{image_tag}' not found in local registry.")
+        #     sys.exit(1)
+        if full_image_name not in images_output:
+            print("⚠️ Built image not tagged correctly. Searching by IMAGE ID...")
+            # Find the dangling image with <none>:<none>
+            image_id_line = next((line for line in images_output.splitlines() if "none" in line), None)
+            if image_id_line:
+                image_id = image_id_line.split()[2]
+                print(f"Found dangling image: {image_id}")
+                run_command(f"docker tag {image_id} {full_image_name}", f"Re-tagging image as {full_image_name}")
+            else:
+                print("❌ No local image found to tag. Cannot continue.")
+                sys.exit(1)
         else:
-            print(f"⚠️ Verification failed: Image '{image_identifier}:{image_tag}' not found in local registry.")
-            sys.exit(1)
+            print(f"✅ Image already tagged correctly: {full_image_name}")
 
     except Exception as e:
         print(f"❌ Failed to verify built Docker image: {e}")
