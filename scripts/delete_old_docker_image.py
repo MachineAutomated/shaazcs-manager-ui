@@ -29,7 +29,7 @@ def main():
 
     # Environment Variables
     docker_username = os.getenv("DOCKERHUB_USERNAME")
-    docker_owner = os.getenv("DOCKERHUB_OWNER").toLowerCase()
+    docker_owner = os.getenv("DOCKERHUB_OWNER").lower()
     docker_token = os.getenv("GH_PERSONAL_PKG_RW_TOKEN")
     image_name = os.getenv("DOCKER_IMAGE_NAME", "shaazcs-manager-ui")
     image_tag = os.getenv("DOCKER_IMAGE_TAG", "latest")
