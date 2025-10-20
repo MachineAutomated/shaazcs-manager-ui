@@ -19,6 +19,11 @@ jobs:
       DOCKERHUB_OWNER: MachineAutomated
 
     steps:
+      - name: Clean space
+        run: |
+          docker system prune -af || true
+          rm -rf ~/.npm
+          
       - name: Checkout repo
         uses: actions/checkout@v4
 
