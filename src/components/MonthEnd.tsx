@@ -1,27 +1,83 @@
+import React, { useEffect, useState } from "react";
+import { Card } from "primereact/card";
+import { Button } from "primereact/button";
+import { Message } from "primereact/message";
+import { Calendar } from "primereact/calendar";
+import { getMonthEndSummaryForMonth } from "../api/transactionApi";
 
-// import React, { useEffect, useState } from "react";
-// import { InputNumber } from "primereact/inputnumber";
-// import { Button } from "primereact/button";
-// import { Message } from "primereact/message";
-// import { Card } from "primereact/card";
-// import { getMonthEndSummaryForMonth } from "../api/transactionApi"; // Assume API methods exist
-/*
-It will show month end related information and actions.
-1. Total summary of total cash available
-2. When the MonthEnd pages opens then 
-    a. It will check for MonthEnd already done or not for the current month.
-    b. If already done then it will show the summary of month end.
-    c. If not done then it will show button to perform month end.
-3. Perform Month End action
-    a. Input : Various CASH accounts balances.
-    a. Calculate total IN, total OUT, leftover.
-    b. Save this information in MonthEnd table with month and year.
-    c. Show success message and summary of month end.
 
-. Generate month end report (downloadable) (Not in this release)
-*/
 const MonthEnd: React.FC = () => {
-    return <div>Month End Component</div>;
-}
-
-export default MonthEnd;
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [monthEndExists, setMonthEndExists] = useState<boolean | null>(null);
+    const [loading, setLoading] = useState(false);
+  
+    const handleCheckMonthEnd = async () => {
+      if (!selectedDate) return;
+  
+      setLoading(true);
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth() + 1; // JS months are 0-based
+  
+      try {
+        const result = await getMonthEndSummaryForMonth(year, month);
+        alert(result.data.typeof);
+        // Assume API returns null or empty if not found
+        setMonthEndExists(!!result);
+      } catch (error) {
+        console.error("Error fetching month end summary:", error);
+        setMonthEndExists(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    return (
+      <div className="p-4">
+        <Card title="Month End Summary">
+          <div className="flex flex-column gap-3">
+            <div className="flex align-items-center gap-2">
+              <label htmlFor="monthPicker" className="font-medium">
+                Select Month:
+              </label>
+              <Calendar
+                id="monthPicker"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.value ?? null)}
+                view="month"
+                dateFormat="mm/yy"
+                showIcon
+                placeholder="Select month"
+                className="p-calendar-custom"
+              />
+            </div>
+  
+            <Button
+              label={loading ? "Checking..." : "Check Month End"}
+              icon="pi pi-search"
+              onClick={handleCheckMonthEnd}
+              disabled={!selectedDate || loading}
+              style={{ backgroundColor: "skyblue", borderColor: "black" }}
+            />
+  
+            {monthEndExists !== null && (
+              <div className="mt-3">
+                {monthEndExists ? (
+                  <Message
+                    severity="success"
+                    text="Month-end record already exists for the selected month."
+                  />
+                ) : (
+                  <Message
+                    severity="warn"
+                    text="No month-end record found. You can perform month end."
+                  />
+                )}
+              </div>
+            )}
+          </div>
+        </Card>
+      </div>
+    );
+  };
+    
+    export default MonthEnd;
