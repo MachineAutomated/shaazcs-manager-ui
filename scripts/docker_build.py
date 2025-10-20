@@ -58,8 +58,9 @@ def main():
         print("\n🔹 Step 3: Build Docker Image")
         image_name = os.getenv("DOCKER_IMAGE_NAME", "shaazcs-manager-ui")
         image_tag = os.getenv("DOCKER_IMAGE_TAG", "latest")
+        token = os.getenv("GH_PERSONAL_PKG_RW_TOKEN")
 
-        build_command = f"docker build -t {image_name}:{image_tag} ."
+        build_command = f"docker build -t {image_name}:{image_tag} --build-arg GITHUB_TOKEN={token} ."
         run_command(build_command, f"Building Docker image {image_name}:{image_tag}")
         print(f"✅ Docker image built successfully: {image_name}:{image_tag}")
     except Exception as e:

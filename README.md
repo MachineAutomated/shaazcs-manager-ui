@@ -4,7 +4,7 @@ Tasks done to docker push
 
 ```
 docker build --no-cache \
-  --build-arg GITHUB_TOKEN=${GITHUB_PERSONAL_PKG_RW_TOKEN} \
+  --build-arg GITHUB_TOKEN=${GH_PERSONAL_PKG_RW_TOKEN} \
   -t shaazcs-manager-ui:1.0.0 .
 
 docker run -p 5173:5173 shaazcs-manager-ui:1.0.0

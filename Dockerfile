@@ -1,36 +1,3 @@
-# # ====== Stage 1: Build ======
-# FROM node:18-alpine AS builder
-
-# # Set working directory
-# WORKDIR /app
-
-# # Copy .npmrc with GitHub Token for package authentication
-# # (We'll pass the token at build time, not commit it!)
-# ARG GITHUB_TOKEN
-# RUN echo "@machineautomated:registry=https://npm.pkg.github.com/" > .npmrc && \
-#     echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> .npmrc && \
-#     echo "always-auth=true" >> .npmrc
-
-# # Install your private package from GitHub Packages
-# RUN npm install @machineautomated/shaazcs-manager-ui@1.0.0
-
-# # ====== Stage 2: Run ======
-# FROM node:18-alpine AS runtime
-
-# WORKDIR /app
-
-# # Copy installed app from builder
-# COPY --from=builder /app/node_modules /app/node_modules
-
-# # Copy your package files
-# COPY --from=builder /app/node_modules/@machineautomated/shaazcs-manager-ui /app
-
-# # Install vite (runtime requirement for dev mode)
-# RUN npm install vite
-
-# EXPOSE 5173
-
-# CMD ["npm", "run", "dev"]
 
 ##Munnu
 # ====== Stage 1: Build the app ======
