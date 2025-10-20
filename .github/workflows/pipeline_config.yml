@@ -13,6 +13,9 @@ jobs:
     env:
       PIPELINE_PAT: ${{ secrets.PIPELINE_PAT }}  # PAT with Read/Write/Delete/Repo
       GH_PERSONAL_PKG_RW_TOKEN: ${{ secrets.GH_PERSONAL_PKG_RW_TOKEN }}  # PAT with Publish npm packages
+      DOCKER_IMAGE_NAME: shaazcs-manager-ui
+      DOCKER_IMAGE_TAG: 1.0.0 # We can set this dynamically as needed
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
 
     steps:
       - name: Checkout repo
@@ -51,3 +54,21 @@ jobs:
       # -----------------------------
       - name: Publish New npm package
         run: python scripts/publish_new_pkg.py
+
+      # -----------------------------
+      # Docker Build (Python)
+      # -----------------------------
+      - name: Build Docker Image
+        run: python scripts/docker_build.py
+
+      # -----------------------------
+      # Delete Old Docker Image (Python)
+      # -----------------------------
+      - name: Delete Old Docker Image
+        run: python scripts/delete_old_docker_image.py
+
+      # -----------------------------
+      # Push Docker Image (Python)
+      # -----------------------------
+      - name: Push Docker Image
+        run: python scripts/push_docker_image.py
