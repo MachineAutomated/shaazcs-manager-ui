@@ -19,7 +19,7 @@ RUN npm install && npm run build
 
 
 # ====== Stage 2: Serve with Nginx ======
-FROM nginx:alpine
+FROM ghcr.io/actions/nginx:alpine
 
 # Create a custom Nginx config to serve on port 5173
 RUN rm /etc/nginx/conf.d/default.conf
