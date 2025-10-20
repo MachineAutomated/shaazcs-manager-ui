@@ -28,7 +28,7 @@ def main():
     print("\n🚀 Starting Docker Image Cleanup Stage")
 
     # Environment Variables
-    docker_username = os.getenv("DOCKER_USERNAME")
+    docker_username = os.getenv("DOCKERHUB_USERNAME")
     docker_token = os.getenv("GH_PERSONAL_PKG_RW_TOKEN")
     image_name = os.getenv("DOCKER_IMAGE_NAME", "shaazcs-manager-ui")
     image_tag = os.getenv("DOCKER_IMAGE_TAG", "latest")
@@ -40,7 +40,7 @@ def main():
     try:
         print("\n🔹 Step 1: Docker login and verify")
         if not docker_username or not docker_token:
-            raise ValueError("DOCKER_USERNAME or GH_PERSONAL_PKG_RW_TOKEN environment variables missing.")
+            raise ValueError("DOCKERHUB_USERNAME or GH_PERSONAL_PKG_RW_TOKEN environment variables missing.")
 
         login_command = f"echo {docker_token} | docker login ghcr.io -u {docker_username} --password-stdin"
         run_command(login_command, "Logging into GitHub Container Registry")
