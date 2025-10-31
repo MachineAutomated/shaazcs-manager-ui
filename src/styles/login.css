@@ -1,0 +1,82 @@
+/* LoginPage.css */
+
+.login-page {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f7f8fa;
+  }
+  
+  .login-card {
+    width: 800px;
+    max-width: 95%;
+    padding: 2rem;
+    border-radius: 12px;
+  }
+  
+  /* Row holding inputs + button */
+  .login-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end; /* align inputs and button baseline */
+    flex-wrap: wrap; /* will stack on small screens */
+  }
+  
+  /* input column (label above input) */
+  .input-col {
+    flex: 1 1 300px; /* grow, shrink, base width */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Row holding button */
+  .action-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end; /* align inputs and button baseline */
+    flex-wrap: wrap; /* will stack on small screens */
+    padding-left: 15%;
+  }
+  
+  /* action (button) column */
+  .action-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 140px; /* fixed width for button column */
+  }
+  
+  /* small tweaks */
+  .input-label {
+    font-weight: 600;
+    color: #4a5568;
+    margin-left: 0.25rem;
+    width: 20%;
+  }
+  .login-btn {
+    width: 140px;
+  }
+  
+  /* error row */
+  .error-row {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  
+  /* responsive: on very small screens make inputs full width and button full width below */
+  @media (max-width: 740px) {
+    .login-row {
+      align-items: stretch;
+      gap: 0.75rem;
+    }
+    .action-col {
+      flex: 1 1 100%;
+      justify-content: flex-end;
+    }
+    .login-btn {
+      width: 100%;
+    }
+  }
+  

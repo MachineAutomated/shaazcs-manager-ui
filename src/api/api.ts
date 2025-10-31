@@ -10,11 +10,10 @@ api.interceptors.request.use(
     // const token = localStorage.getItem("token");
     const token = sessionStorage.getItem("jwt");
     if (token) {
-      console.log("Attaching token to request:", token);
       config.headers.Authorization = `Bearer ${token}`;
     }
     else {
-      console.log("No token found in localStorage");
+      console.log("Token missing!!");
     }
     return config;
   },
