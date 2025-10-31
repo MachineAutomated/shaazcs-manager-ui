@@ -1,6 +1,5 @@
-import axios from "axios";
-import { API_BASE_URL } from "../config";
+import api from "./api";
 
 export async function getCategories() {
-    return axios.get(`${API_BASE_URL}/utils/categories`)
+    return api.get("/utils/categories");
 }

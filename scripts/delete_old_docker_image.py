@@ -2,7 +2,7 @@
 # Delete Old Docker Image (Python)
 # -----------------------------
 """
-Step 1: Docker logn and verify
+Step 1: Docker login and verify
 Step 2: Delete old Docker image if it exists
 """
 

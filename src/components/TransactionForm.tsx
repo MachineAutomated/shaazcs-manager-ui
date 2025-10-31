@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { saveTransaction } from "../api/transactionApi";
 import { getCategories } from "../api/utilitiesApi";
+// import api from "../api/api";
 import { Checkbox } from 'primereact/checkbox';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
@@ -29,6 +30,7 @@ const TransactionForm: React.FC = () => {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
+                // const response = await getCategories();
                 const response = await getCategories();
                 const map: Map<number, string> = objectToMap(response.data);
                 // Convert Map → array for PrimeReact dropdown
