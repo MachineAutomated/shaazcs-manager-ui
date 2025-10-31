@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:18
+    container_name: shaazcs-manager-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: mysecretpassword  #change this value as needed
+      POSTGRES_DB: shaazcs_manager
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  finance-mgr:
+    image: ghcr.io/machineautomated/finance-mgr:1.0.0
+    container_name: finance-mgr
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      app.jwt.expiration-ms: 3600000
+      app.jwt.issuer: shaazcs-manager
+      app.jwt.secret: 2934a29b-1d5d-461c-a882-ab3ca1b3d566 #Can be changed as needed
+      ENCRYPTION_KEY: MyUltraSecretKey@2025 #Can be changed as needed
+      spring.datasource.driver-class-name: org.postgresql.Driver
+      spring.datasource.password: mysecretpassword #must match POSTGRES_PASSWORD
+      spring.datasource.url: jdbc:postgresql://localhost:5432/shaazcs_manager
+      spring.datasource.username: admin
+    ports:
+      - "8080:8080"
+
+  shaazcs-manager-ui:
+    image: ghcr.io/machineautomated/shaazcs-manager-ui:1.0.0  # 👈 replace with actual image
+    container_name: shaazcs-ui
+    restart: always
+    depends_on:
+      - finance-mgr
+    ports:
+      - "3000:80"  # or "3000:3000" if your UI runs on 3000 inside the container
+
+volumes:
+  postgres_data:
