@@ -21,14 +21,13 @@ services:
     depends_on:
       - postgres
     environment:
-      app.jwt.expiration-ms: 3600000
-      app.jwt.issuer: shaazcs-manager
-      app.jwt.secret: 2934a29b-1d5d-461c-a882-ab3ca1b3d566 #Can be changed as needed
+      JWT_EXPIRATION_MILLI_SECONDS: 3600000
+      JWT_ISSUER: shaazcs-manager
+      JWT_SECRET: 2934a29b-1d5d-461c-a882-ab3ca1b3d566 #Can be changed as needed
       ENCRYPTION_KEY: MyUltraSecretKey@2025 #Can be changed as needed
-      spring.datasource.driver-class-name: org.postgresql.Driver
-      spring.datasource.password: mysecretpassword #must match POSTGRES_PASSWORD
-      spring.datasource.url: jdbc:postgresql://localhost:5432/shaazcs_manager
-      spring.datasource.username: admin
+      SPRING_DATASOURCE_PASSWORD: mysecretpassword #must match POSTGRES_PASSWORD
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/shaazcs_manager
+      SPRING_DATASOURCE_USERNAME: admin
     ports:
       - "8080:8080"
 
