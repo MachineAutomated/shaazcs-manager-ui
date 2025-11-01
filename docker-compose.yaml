@@ -26,7 +26,7 @@ services:
       JWT_SECRET: 2934a29b-1d5d-461c-a882-ab3ca1b3d566 #Can be changed as needed
       ENCRYPTION_KEY: MyUltraSecretKey@2025 #Can be changed as needed
       SPRING_DATASOURCE_PASSWORD: mysecretpassword #must match POSTGRES_PASSWORD
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/shaazcs_manager
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/shaazcs_manager
       SPRING_DATASOURCE_USERNAME: admin
     ports:
       - "8080:8080"
@@ -38,7 +38,7 @@ services:
     depends_on:
       - finance-mgr
     ports:
-      - "3000:80"  # or "3000:3000" if your UI runs on 3000 inside the container
+      - "5173:5173"  # or "3000:3000" if your UI runs on 3000 inside the container
 
 volumes:
   postgres_data:
