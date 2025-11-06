@@ -1,8 +1,33 @@
-#root {
-  max-width: 1280px;
+html, body, #root {
+  max-width: var(--surface-ground);
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+  background-image: url('');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* makes it stay while scrolling */
+  background-repeat: no-repeat;
+}
+
+body {
+  background-color: var(--surface-ground);
+  font-family: var(--font-family);
+}
+
+body::before {
+  content: '';
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.6); /* or rgba(0,0,0,0.4) for dark overlay */
+  z-index: 0;
 }
 
 .logo {
@@ -45,4 +70,104 @@
   background-color: skyblue !important;
   border: 1px solid #000 !important;
   color: #000 !important;
+}
+
+/* Ensure the Menubar takes full width and aligns left */
+.topbar-menu {
+  justify-content: flex-start; /* Ensures items start from left */
+  flex-grow: 1;
+  text-align: left;
+  max-height: 45px;
+  margin-top: 0;
+  border-style: none;
+  padding: auto;
+  margin-left: 20px;
+  margin-right:20px;
+  /* position: fixed; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* keeps it above other content */
+  background-color: rgba(255, 255, 255, 0); /* semi-transparent white */
+  backdrop-filter: blur(8px); /* subtle glass effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.topbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+
+  /* transparent at top → darker at bottom */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.0),   /* fully transparent at top */
+    rgba(0, 0, 0, 0.2)    /* darker but see-through at bottom */
+  );
+
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Adjust link colors for visibility */
+.p-menubar .p-menuitem-link {
+  color: #ffffff; /* white text for dark backgrounds */
+  font-weight: 500;
+}
+
+/* Hover effect */
+.p-menubar .p-menuitem-link:hover {
+  background: rgba(238, 232, 232, 0.2);
+  border-radius: 8px;
+}
+
+.p-menubar {
+  border: none;
+  background: transparent;
+  box-shadow: 0px 2px 20px rgba(66, 156, 81, 0.1);
+  transition: box-shadow 0.3s ease;
+  margin: 0;
+  box-shadow: none
+}
+
+.topbar-container.scrolled {
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(14px) saturate(180%);
+}
+
+.topbar-start{
+  display: flex;
+  align-items: center;
+}
+
+.topbar-start-icon {
+  margin-top: 2%;
+  max-height: 10px;
+  margin-bottom: 3%;
+}
+
+.topbar-start-divider {
+  height: 20px; /* or any height you want */
+  align-self: center; /* vertically center if inside flex */
+  border-left: 1px transparent rgba(173, 201, 214, 0.3); /* faint white line */
+  margin: 0 0.75rem; /* horizontal spacing */
+}
+
+.content-container {
+  padding-top: 40px; /* adjust to your TopBar height */
+}
+
+.transaction-form-container {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  /* padding: 1rem; */
+  background-color: rgba(255, 255, 255, 0.8); /* semi-transparent white */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

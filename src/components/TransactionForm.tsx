@@ -97,11 +97,11 @@ const handleDateChange = (e: any) => {
 };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column"}}>
+    <form onSubmit={handleSubmit} >
       <div className="card flex justify-content-center">
         <InputText
             type="text"
-            className="p-inputtext-sm"
+            className="transaction-form-container"
             value={Item} 
             placeholder="Item Name"
             onChange={(e) => setDescription(e.target.value)}
@@ -119,14 +119,14 @@ const handleDateChange = (e: any) => {
             placeholder="Select Category"
             filter     // enables search
             showClear  // adds clear (X) button
-            className="w-full md:w-14rem"
+            className="transaction-form-container"
           />
         </div>
       )}
       <div className="card flex justify-content-center">
         <InputText
             type="number"
-            className="p-inputtext-sm"
+            className="transaction-form-container"
             value={Amount}
             placeholder="Amount"
             onChange={(e) => setAmount(e.target.value)}
@@ -169,6 +169,7 @@ const handleDateChange = (e: any) => {
                 <FloatLabel >
                 <Calendar 
                   id="createdAtdisplay" 
+                  className="transaction-form-container"
                   value={CreatedAt} 
                   onChange={handleDateChange} 
                   showTime 
@@ -178,7 +179,7 @@ const handleDateChange = (e: any) => {
                 />
                 <label htmlFor="createdAtdisplay" className="font-bold block" 
                 >
-                    Use Created At
+                    Using Created At
                 </label>
                 <p style={{ fontSize: "12px", color: "gray" }}>
                   {formattedDate
@@ -187,7 +188,7 @@ const handleDateChange = (e: any) => {
                 </p>
                 </FloatLabel>
             )}
-         
+            
             <Button 
               label="Submit" 
               style={{marginTop:"20px", backgroundColor:"skyblue", borderColor:"black"}}
