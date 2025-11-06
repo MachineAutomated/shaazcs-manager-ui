@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "primereact/card";
+import { Calendar } from "primereact/calendar";
+import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
@@ -14,18 +16,29 @@ interface TotalSummary {
 }
 
 const Summary: React.FC = () => {
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [summary, setSummary] = useState<SummaryItem[]>([]);
   const [totals, setTotals] = useState<TotalSummary | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchSummary = async () => {
-      try {
-        const response = await getSummary();
-        const data = response.data;
 
-        const transformed: SummaryItem[] = [];
+  const fetchSummary = async () => {
+    if (!selectedDate) {
+      alert("Please select a month and year!");
+      return;
+    }
+    
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth() + 1;
+
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await getSummary(year, month); // Update this line to pass year and month if API supports it
+      const data = response.data;
+
+      const transformed: SummaryItem[] = [];
         ["IN", "OUT"].forEach((type) => {
           const section = data[type];
           if (section) {
@@ -41,16 +54,14 @@ const Summary: React.FC = () => {
 
         setSummary(transformed);
         setTotals(data.TotalSummary || null);
-      } catch (err) {
-        console.error("Error fetching summary:", err);
-        setError("Failed to fetch summary");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSummary();
-  }, []);
+    
+    } catch (err) {
+      console.error("Error fetching summary:", err);
+      setError("Failed to fetch summary");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   if (loading)
     return (
@@ -88,6 +99,26 @@ const Summary: React.FC = () => {
         boxSizing: "border-box"
       }}
     >
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <Calendar
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.value as Date)}
+                view="month"
+                dateFormat="mm/yy"
+                showIcon
+                placeholder="Select Month & Year"
+                style={{ width: "45%" }}
+                inputStyle={{ backgroundColor: "#f8f9fa" }}
+                className="p-calendar-custom"
+              />
+              <Button
+                label="Fetch Transactions"
+                icon="pi pi-search"
+                onClick={fetchSummary}
+                loading={loading}
+                style={{ backgroundColor: "skyblue", borderColor: "black" }}
+              />
+            </div>
       <Card 
         className="shadow-3 p-3"
         style={{height:"100%"}}

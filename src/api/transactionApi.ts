@@ -4,9 +4,9 @@ export async function saveTransaction(data: any) {
   return api.post(`/saveTransaction`, data);
 }
 
-export async function getSummary() {
+export async function getSummary(year: number, month: number) {
   //Todo: Remove hardcoded year and month
-  return api.get(`/summary?year=2025&month=10`);
+  return api.get(`/summary?year=${year}&month=${month}`);
 }
 
 export async function getTransactionsDetialsByMonth(year: number, month: number) {
