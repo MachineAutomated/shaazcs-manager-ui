@@ -176,7 +176,7 @@ const TransactionDetails: React.FC = () => {
 
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column", gap: "1rem"}}>
       <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
         <Calendar
           value={selectedDate}

@@ -1,3 +1,4 @@
+import '../App.css'
 import React, { useState } from "react";
 import type { Module, SubModule } from "../components/Sidebar";
 import Content from "../components/Content";
@@ -11,18 +12,17 @@ const Dashboard: React.FC = () => {
   const [selectedSubModule, setSelectedSubModule] = useState<SubModule>(null);
 
   return (
-    <div className="card p-0 m-0 w-full ">
+    <div className="dashboard-root">
       <TopBar/>
-      <div className="content-container">
       {/* Toast Component */}
       <ToastInfoEmitter
         showMessage={true}
         severity="info"
         detail="Login Successful."
       />
-      </div>
-      <Splitter style={{ height: '700px', width: '1200px'}}>
-      <SplitterPanel className="flex align-items-center justify-content-center" size={25} minSize={10}>
+      <div className="dashboard-main">
+      <Splitter className='dashboard-container' layout="horizontal" gutterSize={0} >
+      <SplitterPanel size={20} minSize={20}>
          <Sidebar 
           selectedModule={selectedModule}
           selectedSubModule={selectedSubModule}
@@ -33,18 +33,14 @@ const Dashboard: React.FC = () => {
           onSubModuleSelect={setSelectedSubModule}
          />
       </SplitterPanel>
-      <SplitterPanel className="flex align-items-center justify-content-center" size={75}
-       
-      >
+      <SplitterPanel size={80} minSize={80}>
         <Content
           selectedModule={selectedModule}
           selectedSubModule={selectedSubModule}
         />
       </SplitterPanel>
     </Splitter>
-      <button onClick={() => { sessionStorage.removeItem("jwt"); window.location.href = "/"; }}>
-        Logout
-    </button>
+    </div>
     </div>
   );
 };

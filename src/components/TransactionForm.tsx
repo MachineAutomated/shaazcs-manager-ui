@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { saveTransaction } from "../api/transactionApi";
 import { getCategories } from "../api/utilitiesApi";
-// import api from "../api/api";
 import { Checkbox } from 'primereact/checkbox';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
@@ -97,11 +96,11 @@ const handleDateChange = (e: any) => {
 };
 
   return (
-    <form onSubmit={handleSubmit} >
+    <form onSubmit={handleSubmit} className="card transaction-form-container">
       <div className="card flex justify-content-center">
         <InputText
             type="text"
-            className="transaction-form-container"
+            className="transaction-form-components"
             value={Item} 
             placeholder="Item Name"
             onChange={(e) => setDescription(e.target.value)}
@@ -119,14 +118,14 @@ const handleDateChange = (e: any) => {
             placeholder="Select Category"
             filter     // enables search
             showClear  // adds clear (X) button
-            className="transaction-form-container"
+            className="transaction-form-components"
           />
         </div>
       )}
       <div className="card flex justify-content-center">
         <InputText
             type="number"
-            className="transaction-form-container"
+            className="transaction-form-components"
             value={Amount}
             placeholder="Amount"
             onChange={(e) => setAmount(e.target.value)}
@@ -161,15 +160,15 @@ const handleDateChange = (e: any) => {
               Use CreatedAt Time
             </label>
           
-            {/* </div>
-        <div className="card flex justify-content-center"> */}
+            </div>
+        <div className="card flex justify-content-center"> 
             {UseCreatedAt && (
               
               
                 <FloatLabel >
                 <Calendar 
                   id="createdAtdisplay" 
-                  className="transaction-form-container"
+                  className="transaction-form-components"
                   value={CreatedAt} 
                   onChange={handleDateChange} 
                   showTime 
@@ -177,8 +176,7 @@ const handleDateChange = (e: any) => {
                   dateFormat="dd.mm.yy"
                   style={{marginTop:"20px"}}
                 />
-                <label htmlFor="createdAtdisplay" className="font-bold block" 
-                >
+                <label htmlFor="createdAtdisplay" className="font-bold block" >
                     Using Created At
                 </label>
                 <p style={{ fontSize: "12px", color: "gray" }}>
@@ -195,7 +193,6 @@ const handleDateChange = (e: any) => {
             />
 
         </div>
-          
     </form>
   );
 };
