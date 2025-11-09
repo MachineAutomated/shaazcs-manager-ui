@@ -194,7 +194,7 @@ const TransactionDetails: React.FC = () => {
           icon="pi pi-search"
           onClick={handleFetch}
           loading={loading}
-          style={{ backgroundColor: "skyblue", borderColor: "black" }}
+          className="p-button-rounded p-button-outlined"
         />
       </div>
       {/* Input boxes for filtering */}

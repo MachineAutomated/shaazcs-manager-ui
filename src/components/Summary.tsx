@@ -112,11 +112,11 @@ const Summary: React.FC = () => {
                 className="p-calendar-custom"
               />
               <Button
-                label="Fetch Transactions"
+                label="Fetch Summary"
                 icon="pi pi-search"
                 onClick={fetchSummary}
                 loading={loading}
-                style={{ backgroundColor: "skyblue", borderColor: "black" }}
+                className="p-button-rounded p-button-outlined"
               />
             </div>
       <Card 

@@ -88,8 +88,6 @@ const LoginPage: React.FC = () => {
             <Button
               label={registering ? "Registering..." : "Register"}
               icon="pi pi-register"
-              // onClick={handleRegister} // Registration handler can be implemented similarly
-              // loading={loading}
               className="p-button-rounded p-button-outlined register-btn"
               style={{ marginTop: '10px' }}
             />

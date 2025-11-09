@@ -188,8 +188,9 @@ const handleDateChange = (e: any) => {
             )}
             
             <Button 
-              label="Submit" 
-              style={{marginTop:"20px", backgroundColor:"skyblue", borderColor:"black"}}
+              icon="pi pi-send"
+              label="Submit"
+              className="p-button-rounded p-button-outlined"
             />
 
         </div>

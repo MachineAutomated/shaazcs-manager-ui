@@ -18,44 +18,46 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   return (
     <div
-      className="card flex flex-column gap-3 p-3"
+      className="card flex flex-column"
       style={{
         width: "100%",
         backgroundColor: "#f9fafb",
         borderRight: "1px solid #ddd",
         height: "100%",
+        padding: "0px",
       }}
     >
       <h3 className="text-lg font-semibold">Modules</h3>
 
       {/* Main Modules */}
-      <div className="flex flex-column gap-2">
+      <div className="grid justify-content-center">
         {["Finance", "Salawat"].map((mod) => (
+          <div key={mod} className="col-6 flex justify-content-center">
           <Button
             key={mod}
             label={mod}
             onClick={() => onModuleSelect(mod as Module)}
-            className="p-button-outlined p-button-sm"
+            className="p-button-outlined p-button-sm sidebar-btn"
             style={{
+              width: '100%',
               backgroundColor:
-                selectedModule === mod ? "#007ad9" : "transparent",
+                selectedModule === mod ? "lightgrey" : "transparent",
               color: selectedModule === mod ? "white" : "#333",
-              borderColor: "#007ad9",
-              fontWeight: selectedModule === mod ? "bold" : "normal",
             }}
           />
+          </div>
         ))}
       </div>
 
       {/* Submodules */}
       {selectedModule === "Finance" && (
-        <div className="flex flex-column gap-2 mt-4">
+        <div className="flex flex-column">
           <h4 className="text-md font-medium mb-2">Finance Options</h4>
-
+          
           <Button
             label="Transactions"
             onClick={() => onSubModuleSelect("Transactions")}
-            className="p-button-text p-button-sm"
+            className="p-button-text p-button-sm sidebar-btn"
             style={{
               backgroundColor:
                 selectedSubModule === "Transactions" ? "#007ad9" : "transparent",
@@ -63,11 +65,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                 selectedSubModule === "Transactions" ? "white" : "#007ad9",
             }}
           />
-
           <Button
             label="Transaction Details"
             onClick={() => onSubModuleSelect("TransactionDetails")}
-            className="p-button-text p-button-sm"
+            className="p-button-text p-button-sm sidebar-btn"
             style={{
               backgroundColor:
                 selectedSubModule === "TransactionDetails"
@@ -79,22 +80,20 @@ const Sidebar: React.FC<SidebarProps> = ({
                   : "#007ad9",
             }}
           />
-
           <Button
             label="Summary"
             onClick={() => onSubModuleSelect("Summary")}
-            className="p-button-text p-button-sm"
+            className="p-button-text p-button-sm sidebar-btn"
             style={{
               backgroundColor:
                 selectedSubModule === "Summary" ? "#007ad9" : "transparent",
               color: selectedSubModule === "Summary" ? "white" : "#007ad9",
             }}
           />
-
           <Button
             label="Month End"
             onClick={() => onSubModuleSelect("MonthEnd")}
-            className="p-button-text p-button-sm"
+            className="p-button-text p-button-sm sidebar-btn"
             style={{
               backgroundColor:
                 selectedSubModule === "MonthEnd" ? "#007ad9" : "transparent",
