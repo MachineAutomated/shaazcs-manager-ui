@@ -96,7 +96,7 @@ const handleDateChange = (e: any) => {
 };
 
   return (
-    <form onSubmit={handleSubmit} className="card transaction-form-container">
+    <form onSubmit={handleSubmit} className="card ">
       <div className="card flex justify-content-center">
         <InputText
             type="text"

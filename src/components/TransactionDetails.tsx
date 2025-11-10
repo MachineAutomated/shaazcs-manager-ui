@@ -5,6 +5,8 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { getTransactionsDetialsByMonth } from "../api/transactionApi";
 import { Tag } from "primereact/tag";
+import { Dialog } from 'primereact/dialog';
+import TransactionForm from "./TransactionForm";
 
 interface Transaction {
   id: number;
@@ -15,6 +17,7 @@ interface Transaction {
 }
 
 const TransactionDetails: React.FC = () => {
+  const [saveTransactionsVisible, setSaveTransactionsVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
@@ -52,6 +55,10 @@ const TransactionDetails: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const handleSave = async () => {
+    alert("Save functionality not implemented yet.");
+  }
 
   /**
    * Parse a date string that can be:
@@ -196,6 +203,19 @@ const TransactionDetails: React.FC = () => {
           loading={loading}
           className="p-button-rounded p-button-outlined"
         />
+
+        <Button
+          label="Save Transactions"
+          icon="pi pi-save"
+          onClick={() => setSaveTransactionsVisible(true)}
+          loading={loading}
+          className="p-button-rounded p-button-outlined"
+        />
+
+        <Dialog header="Save Transaction!" visible={saveTransactionsVisible} style={{ width: '50vw' }} onHide={() => { if (!saveTransactionsVisible) return; setSaveTransactionsVisible(false); }}>
+          <TransactionForm />
+        </Dialog>
+
       </div>
       {/* Input boxes for filtering */}
       <div style={{ display: "flex", gap: "1rem" }}>
