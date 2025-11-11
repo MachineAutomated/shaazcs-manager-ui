@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
@@ -26,6 +26,33 @@ const TransactionDetails: React.FC = () => {
   const [CategoryFilter, setCategoryFilter] = useState("");
   const [createdDateFilter, setCreatedDateFilter] = useState<Date | null>(null);
   const [createdTimeFilter, setCreatedTimeFilter] = useState<string>("");
+  const [rowsPerPage, setRowsPerPage] = useState<number>(8);
+
+
+    useEffect(() => {
+  
+      const calculateRows = () => {
+        // Get viewport height in pixels
+        const screenHeight = window.innerHeight;
+  
+        // Reserve space for header, filters, margins, etc.
+        const usableHeight = screenHeight * 0.6; // same as our scrollHeight 60vh
+  
+        // Approximate height per row (tweaked based on DataTable size)
+        const rowHeight = 38; // px per row (for size="small")
+        const rows = Math.floor(usableHeight / rowHeight);
+  
+        setRowsPerPage(rows > 2 ? rows : 2); // at least 2 rows minimum
+  
+  
+      };
+  
+      calculateRows();
+      window.addEventListener("resize", calculateRows);
+      return () => window.removeEventListener("resize", calculateRows);
+  
+    }, []);
+
 
   const handleFetch = async () => {
     if (!selectedDate) {
@@ -183,8 +210,8 @@ const TransactionDetails: React.FC = () => {
 
 
   return (
-    <div style={{ height: "100%", display: "flex", flexDirection: "column", gap: "1rem"}}>
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+    <div style={{ display: "flex", flexDirection: "column"}}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem", border: "4px solid transparent"}}>
         <Calendar
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.value as Date)}
@@ -205,7 +232,7 @@ const TransactionDetails: React.FC = () => {
         />
 
         <Button
-          label="Save Transactions"
+          label={saveTransactionsVisible ? "Saving Transaction" : "Save Transactions"}
           icon="pi pi-save"
           onClick={() => setSaveTransactionsVisible(true)}
           loading={loading}
@@ -218,7 +245,7 @@ const TransactionDetails: React.FC = () => {
 
       </div>
       {/* Input boxes for filtering */}
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div style={{ display: "flex", gap: ".5rem" }} className="filter-bar">
         <input
           type="text"
           placeholder="Filter by Item"
@@ -239,7 +266,6 @@ const TransactionDetails: React.FC = () => {
           dateFormat="dd/mm/yy"
           showIcon
           placeholder="Filter by Date"
-          style={{ flex: 1 }}
           className="p-calendar-custom"
         />
         <input
@@ -258,9 +284,10 @@ const TransactionDetails: React.FC = () => {
       <DataTable
         value={filteredTransactions}
         paginator
-        rows={8}
+        rows={rowsPerPage}
         stripedRows
         emptyMessage="No transactions found."
+        size="small"
       >
 
         {/* <Column field="Item" header="ID" /> */}

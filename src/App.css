@@ -333,3 +333,84 @@ body::before {
 .p-toast .pi-times {
   font-size: 1rem;
 }
+
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;          /* handles responsiveness */
+  align-items: center;
+  gap: 0.5rem;              /* same as your .5rem */
+  width: 100%;
+}
+
+.filter-bar input,
+.filter-bar .p-calendar {
+  flex: 1;                  /* distribute space equally */
+  font-size: 0.95rem;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* specifically style the time input */
+.filter-bar input[type="time"] {
+  flex: 1;
+  font-family: monospace;
+  text-align: center;
+  height: 32px;
+}
+
+/* optional hover/focus styling for all inputs & calendar */
+.filter-bar input:focus,
+.filter-bar .p-inputtext:focus {
+  outline: none;
+  border-color: #007ad9;
+  box-shadow: 0 0 0 2px rgba(0, 122, 217, 0.2);
+}
+
+/* make Calendar icon fit the same height nicely */
+.filter-bar .p-calendar .p-inputtext {
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+  }
+  .filter-bar input,
+  .filter-bar .p-calendar {
+    width: 100%;
+  }
+}
+
+/* Remove outer border and shadow from PrimeReact Calendar */
+.p-calendar.p-inputwrapper {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Match the calendar input styling to other inputs */
+.p-calendar .p-inputtext {
+  border-radius: 6px !important;
+  padding: 6px !important;
+  box-sizing: border-box !important;
+}
+
+/* On focus, add same highlight as other fields */
+.p-calendar .p-inputtext:focus {
+  border-color: #007ad9 !important;
+  box-shadow: 0 0 0 2px rgba(0, 122, 217, 0.2) !important;
+}
+
+/* Remove default border between icon and input */
+.p-calendar .p-datepicker-trigger {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0px !important;
+}
+

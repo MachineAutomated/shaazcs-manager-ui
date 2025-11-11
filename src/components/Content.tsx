@@ -1,4 +1,4 @@
-import TransactionForm from "./TransactionForm";
+// import TransactionForm from "./TransactionForm";
 import TransactionDetails from "./TransactionDetails";
 import Summary from "./Summary";
 import MonthEnd from "./MonthEnd";
@@ -12,8 +12,8 @@ interface ContentProps {
 const Content: React.FC<ContentProps> = ({ selectedModule, selectedSubModule }) => {
   if (selectedModule === "Finance") {
     switch (selectedSubModule) {
-      case "Transactions":
-        return <TransactionForm />;
+      // case "Transactions":
+      //   return <TransactionForm />;
       case "Summary":
         return <Summary />;
       case "TransactionDetails":

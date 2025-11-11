@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "primereact/card";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
@@ -21,6 +21,32 @@ const Summary: React.FC = () => {
   const [totals, setTotals] = useState<TotalSummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(8);
+
+
+  useEffect(() => {
+
+    const calculateRows = () => {
+      // Get viewport height in pixels
+      const screenHeight = window.innerHeight;
+
+      // Reserve space for header, filters, margins, etc.
+      const usableHeight = screenHeight * 0.6; // same as our scrollHeight 60vh
+
+      // Approximate height per row (tweaked based on DataTable size)
+      const rowHeight = 38; // px per row (for size="small")
+      const rows = Math.floor(usableHeight / rowHeight);
+
+      setRowsPerPage(rows > 2 ? rows : 2); // at least 2 rows minimum
+
+
+    };
+
+    calculateRows();
+    window.addEventListener("resize", calculateRows);
+    return () => window.removeEventListener("resize", calculateRows);
+
+  }, []);
 
 
   const fetchSummary = async () => {
@@ -166,13 +192,14 @@ const Summary: React.FC = () => {
           <DataTable
             value={summary}
             paginator
-            rows={8}
+            rows={rowsPerPage}
             scrollable
             scrollHeight="60vh"
             stripedRows
             responsiveLayout="scroll"
             emptyMessage="No summary data found."
             style={{ minWidth: "450px" }}
+            size="small"
           >
             <Column
               field="type"

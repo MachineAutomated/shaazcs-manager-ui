@@ -54,7 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex flex-column">
           <h4 className="text-md font-medium mb-2">Finance Options</h4>
           
-          <Button
+          {/* <Button
             label="Transactions"
             onClick={() => onSubModuleSelect("Transactions")}
             className="p-button-text p-button-sm sidebar-btn"
@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               color:
                 selectedSubModule === "Transactions" ? "white" : "#007ad9",
             }}
-          />
+          /> */}
           <Button
             label="Transaction Details"
             onClick={() => onSubModuleSelect("TransactionDetails")}
@@ -99,6 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 selectedSubModule === "MonthEnd" ? "#007ad9" : "transparent",
               color: selectedSubModule === "MonthEnd" ? "white" : "#007ad9",
             }}
+            disabled={true}
           />
 
         </div>
