@@ -83,10 +83,6 @@ const TransactionDetails: React.FC = () => {
     }
   };
 
-  const handleSave = async () => {
-    alert("Save functionality not implemented yet.");
-  }
-
   /**
    * Parse a date string that can be:
    * - "dd.MM.yyyy HH:mm:ss.SSS"
