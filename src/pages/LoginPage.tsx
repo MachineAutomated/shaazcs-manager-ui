@@ -52,8 +52,8 @@ const LoginPage: React.FC = () => {
     try {
 
       const response = await api.post("/register", {
-        username,
-        password,
+        "username": registerUsername,
+        "password": registerPassword,
       });
 
       if (response.status !== 200) {
@@ -61,9 +61,8 @@ const LoginPage: React.FC = () => {
       }
 
       const data = response.data;
-      const clientName = data["clientName"];
+      const clientName = data["TenantInfo"]["clientName"];
 
-      setRegisterDialogVisibility(false);
       alert(`Registration successful! ${clientName} can now log in after closing this alert.`);
 
     } catch (err) {
@@ -71,6 +70,8 @@ const LoginPage: React.FC = () => {
       setError("Registration error");
     } finally {
       setLoading(false);
+      setRegisterDialogVisibility(false);
+      setRegistering(false);
     }
   };
 
@@ -128,9 +129,6 @@ const LoginPage: React.FC = () => {
             />
             <Dialog header="Register with new user and password" visible={registerDialogVisibility} style={{ width: '50vw' }} onHide={() => { if (!registerDialogVisibility) return; setRegisterDialogVisibility(false); }}>
               <div >
-                {/* <label htmlFor="username" className="input-label">
-                  Username
-                </label> */}
                 <InputText
                   id="register_username"
                   value={registerUsername}
@@ -138,11 +136,6 @@ const LoginPage: React.FC = () => {
                   placeholder="Enter username"
                   
                 />
-              {/* </div>
-              <div className="login-row"> */}
-                {/* <label htmlFor="password" className="input-label" >
-                  Password
-                </label> */}
                 <Password
                   id="register_password"
                   value={registerPassword}
