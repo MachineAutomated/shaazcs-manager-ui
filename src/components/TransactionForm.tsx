@@ -171,12 +171,12 @@ const handleDateChange = (e: any) => {
                   className="transaction-form-components"
                   value={CreatedAt} 
                   onChange={handleDateChange} 
-                  showTime 
+                  showTime
                   hourFormat="24"
                   dateFormat="dd.mm.yy"
-                  style={{marginTop:"20px"}}
+                  style={{marginTop:"30px"}}
                 />
-                <label htmlFor="createdAtdisplay" className="font-bold block" >
+                <label htmlFor="createdAtdisplay" className="font-bold block" style={{paddingLeft: "40px", paddingBottom: "5px"}}>
                     Using Created At
                 </label>
                 <p style={{ fontSize: "12px", color: "gray" }}>
