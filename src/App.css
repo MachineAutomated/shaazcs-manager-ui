@@ -414,3 +414,17 @@ body::before {
   padding: 0px !important;
 }
 
+/* Style for the user-menu button (transparent icon only) */
+.user-menu-btn {
+  color: #ffffff;            /* icon color - adjust to your TopBar */
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin-right: 1rem;
+}
+
+/* Hover effect */
+.user-menu-btn:hover {
+  color: #007ad9;            /* or any accent color you prefer */
+  background: transparent !important;
+}
