@@ -1,5 +1,4 @@
 // TopBar.tsx
-import '../App.css';
 import React, { useEffect, useRef, useState } from 'react';
 import banner_icon from '../assets/react.svg';
 import { Menubar } from 'primereact/menubar';
