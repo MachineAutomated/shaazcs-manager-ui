@@ -34,6 +34,7 @@ const LoginPage: React.FC = () => {
         throw new Error("No token received");
       }
       sessionStorage.setItem("jwt", token);
+      sessionStorage.setItem("username", username);
       navigate("/dashboard");
 
     } catch (err) {
