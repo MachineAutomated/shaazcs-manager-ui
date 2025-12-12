@@ -1,5 +1,5 @@
 // TopBar.tsx
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import banner_icon from '../assets/react.svg';
 import { Menubar } from 'primereact/menubar';
 import { Image } from 'primereact/image';
@@ -7,13 +7,11 @@ import { Button } from 'primereact/button';
 import { Menu } from 'primereact/menu';
 import { confirmDialog } from 'primereact/confirmdialog';
 import { ConfirmDialog } from 'primereact/confirmdialog';
-import type { MenuItem } from 'primereact/menu';
+import type { MenuItem } from 'primereact/menuitem';
 import api from '../api/api';
 
 export default function TopBar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>("");
   const menu = useRef<Menu | null>(null);
 
   useEffect(() => {
@@ -37,8 +35,6 @@ export default function TopBar() {
       acceptClassName: 'p-button-danger',
       accept: async () => {
         // perform delete user API call here
-        setLoading(true);
-        setError("");
         try {
           const response = await api.delete(`/offboard/${sessionStorage.getItem('username')}`);
           if(response.status !== 200) {
@@ -47,9 +43,6 @@ export default function TopBar() {
           console.log(`User ${sessionStorage.getItem('username')} deleted successfully.`);
         } catch (err) {
           console.error("Delete user failed:", err);
-          setError("Failed to delete user");
-        } finally {
-          setLoading(false);
         }
         // After deletion, redirect or clear session:
         sessionStorage.removeItem('jwt');
