@@ -1,4 +1,3 @@
-import '../App.css'
 import React, { useState } from "react";
 import type { Module, SubModule } from "../components/Sidebar";
 import Content from "../components/Content";

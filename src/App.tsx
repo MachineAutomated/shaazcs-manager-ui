@@ -1,6 +1,6 @@
 import React from "react";
 import type { ReactElement } from "react";
-// import './App.css';
+import './App.css';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
