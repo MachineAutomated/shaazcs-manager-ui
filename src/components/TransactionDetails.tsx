@@ -7,6 +7,7 @@ import { getTransactionsDetialsByMonth } from "../api/transactionApi";
 import { Tag } from "primereact/tag";
 import { Dialog } from 'primereact/dialog';
 import TransactionForm from "./TransactionForm";
+import { Checkbox } from "primereact/checkbox";
 
 interface Transaction {
   id: number;
@@ -27,31 +28,32 @@ const TransactionDetails: React.FC = () => {
   const [createdDateFilter, setCreatedDateFilter] = useState<Date | null>(null);
   const [createdTimeFilter, setCreatedTimeFilter] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(8);
+  const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
 
 
-    useEffect(() => {
-  
-      const calculateRows = () => {
-        // Get viewport height in pixels
-        const screenHeight = window.innerHeight;
-  
-        // Reserve space for header, filters, margins, etc.
-        const usableHeight = screenHeight * 0.6; // same as our scrollHeight 60vh
-  
-        // Approximate height per row (tweaked based on DataTable size)
-        const rowHeight = 38; // px per row (for size="small")
-        const rows = Math.floor(usableHeight / rowHeight);
-  
-        setRowsPerPage(rows > 2 ? rows : 2); // at least 2 rows minimum
-  
-  
-      };
-  
-      calculateRows();
-      window.addEventListener("resize", calculateRows);
-      return () => window.removeEventListener("resize", calculateRows);
-  
-    }, []);
+  useEffect(() => {
+
+    const calculateRows = () => {
+      // Get viewport height in pixels
+      const screenHeight = window.innerHeight;
+
+      // Reserve space for header, filters, margins, etc.
+      const usableHeight = screenHeight * 0.6; // same as our scrollHeight 60vh
+
+      // Approximate height per row (tweaked based on DataTable size)
+      const rowHeight = 38; // px per row (for size="small")
+      const rows = Math.floor(usableHeight / rowHeight);
+
+      setRowsPerPage(rows > 2 ? rows : 2); // at least 2 rows minimum
+
+
+    };
+
+    calculateRows();
+    window.addEventListener("resize", calculateRows);
+    return () => window.removeEventListener("resize", calculateRows);
+
+  }, []);
 
 
   const handleFetch = async () => {
@@ -80,6 +82,23 @@ const TransactionDetails: React.FC = () => {
       alert("Failed to fetch transactions.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Handler for deleting selected transactions
+  const handleDeleteSelected = () => {
+    if (selectedTransactions.length === 0) {
+      alert("No transactions selected for deletion.");
+      return;
+    }
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete ${selectedTransactions.length} selected transaction(s)?`
+    );
+    if (confirmDelete) {
+      setTransactions((prev) =>
+        prev.filter((t) => !selectedTransactions.some((sel) => sel.id === t.id))
+      );
+      setSelectedTransactions([]);
     }
   };
 
@@ -206,8 +225,8 @@ const TransactionDetails: React.FC = () => {
 
 
   return (
-    <div style={{ display: "flex", flexDirection: "column"}}>
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem", border: "4px solid transparent"}}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem", border: "4px solid transparent" }}>
         <Calendar
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.value as Date)}
@@ -228,11 +247,20 @@ const TransactionDetails: React.FC = () => {
         />
 
         <Button
-          label={saveTransactionsVisible ? "Saving Transaction" : "Save Transactions"}
+          label={saveTransactionsVisible ? "Saving Transaction" : "Save Transaction"}
           icon="pi pi-save"
           onClick={() => setSaveTransactionsVisible(true)}
           loading={loading}
           className="p-button-rounded p-button-outlined"
+        />
+
+        <Button
+          label="Delete"
+          icon="pi pi-trash"
+          severity="danger"
+          onClick={handleDeleteSelected}
+          className="p-button-rounded p-button-outlined p-button-danger"
+          style={{ marginLeft: 8 }}
         />
 
         <Dialog header="Save Transaction!" visible={saveTransactionsVisible} style={{ width: '50vw' }} onHide={() => { if (!saveTransactionsVisible) return; setSaveTransactionsVisible(false); }}>
@@ -284,9 +312,11 @@ const TransactionDetails: React.FC = () => {
         stripedRows
         emptyMessage="No transactions found."
         size="small"
+        selection={selectedTransactions}
+        onSelectionChange={(e) => setSelectedTransactions(e.value as Transaction[])}
+        dataKey="id"
       >
-
-        {/* <Column field="Item" header="ID" /> */}
+        <Column selectionMode="multiple" headerStyle={{ width: '3em' }} />
         <Column field="Item" header="Item" />
         <Column field="Category" header="Category" />
         <Column field="Amount" header="Amount" />
@@ -294,6 +324,43 @@ const TransactionDetails: React.FC = () => {
           field="CreatedAt"
           header="Created At"
           body={(rowData) => dateTemplate(rowData.CreatedAt)}
+        />
+        <Column
+          header="Actions"
+          body={(rowData) => (
+            <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <i
+                className="pi pi-pencil"
+                style={{
+                  color: "#1976d2",
+                  fontSize: "1.1rem",
+                  cursor: "pointer",
+                }}
+                title="Edit"
+                onClick={() => {
+                  // Implement edit functionality here
+                  alert(`Edit transaction ID ${rowData.id}`);
+                }}
+              />
+              <i
+                className="pi pi-trash"
+                style={{
+                  color: "#d32f2f",
+                  fontSize: "1.1rem",
+                  cursor: "pointer",
+                }}
+                title="Delete"
+                onClick={() => {
+                  const confirmDelete = window.confirm(
+                    `Are you sure you want to delete transaction ID ${rowData.id}?`
+                  );
+                  if (confirmDelete) {
+                    setTransactions((prev) => prev.filter((t) => t.id !== rowData.id));
+                  }
+                }}
+              />
+            </span>
+          )}
         />
       </DataTable>
     </div>
