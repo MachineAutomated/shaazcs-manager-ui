@@ -10,7 +10,7 @@ import TransactionForm from "./TransactionForm";
 import { Checkbox } from "primereact/checkbox";
 
 interface Transaction {
-  id: number;
+  Id: number;
   Item: string;
   Category: string;
   Amount: number;
@@ -69,11 +69,12 @@ const TransactionDetails: React.FC = () => {
       setLoading(true);
       const response = await getTransactionsDetialsByMonth(year, month);
       // normalize to avoid undefined fields
-      const normalized = (response.data || []).map((t: Transaction) => ({
-        ...t,
+      const normalized = (response.data || []).map((t: any) => ({
+        Id: t.Id, // ensure backend sends this
         Item: t.Item ?? "",
         Category: t.Category ?? "",
-
+        Amount: Number(t.Amount ?? 0),
+        CreatedAt: t.CreatedAt ?? "",
       }));
       setTransactions(normalizeTransactions(normalized));
 
@@ -314,7 +315,7 @@ const TransactionDetails: React.FC = () => {
         size="small"
         selection={selectedTransactions}
         onSelectionChange={(e) => setSelectedTransactions(e.value as Transaction[])}
-        dataKey="id"
+        dataKey="Id"
       >
         <Column selectionMode="multiple" headerStyle={{ width: '3em' }} />
         <Column field="Item" header="Item" />
@@ -327,35 +328,24 @@ const TransactionDetails: React.FC = () => {
         />
         <Column
           header="Actions"
-          body={(rowData) => (
+          body={(rowData: Transaction) => (
             <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <i
                 className="pi pi-pencil"
-                style={{
-                  color: "#1976d2",
-                  fontSize: "1.1rem",
-                  cursor: "pointer",
-                }}
+                style={{ color: "#1976d2", fontSize: "1.1rem", cursor: "pointer" }}
                 title="Edit"
-                onClick={() => {
-                  // Implement edit functionality here
-                  alert(`Edit transaction ID ${rowData.id}`);
-                }}
+                onClick={() => alert(`Edit transaction: ${rowData.Item}`)}
               />
               <i
                 className="pi pi-trash"
-                style={{
-                  color: "#d32f2f",
-                  fontSize: "1.1rem",
-                  cursor: "pointer",
-                }}
+                style={{ color: "#d32f2f", fontSize: "1.1rem", cursor: "pointer" }}
                 title="Delete"
                 onClick={() => {
                   const confirmDelete = window.confirm(
-                    `Are you sure you want to delete transaction ID ${rowData.id}?`
+                    `Are you sure you want to delete transaction "${rowData.Item}"?`
                   );
                   if (confirmDelete) {
-                    setTransactions((prev) => prev.filter((t) => t.id !== rowData.id));
+                    setTransactions((prev) => prev.filter((t) => t.Id !== rowData.Id));
                   }
                 }}
               />
