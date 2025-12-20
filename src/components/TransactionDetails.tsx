@@ -3,14 +3,14 @@ import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { getTransactionsDetialsByMonth } from "../api/transactionApi";
+import { getTransactionsDetialsByMonth, deleteTransaction } from "../api/transactionApi";
 import { Tag } from "primereact/tag";
 import { Dialog } from 'primereact/dialog';
 import TransactionForm from "./TransactionForm";
 import { Checkbox } from "primereact/checkbox";
 
 interface Transaction {
-  Id: number;
+  Id: string;
   Item: string;
   Category: string;
   Amount: number;
@@ -70,7 +70,7 @@ const TransactionDetails: React.FC = () => {
       const response = await getTransactionsDetialsByMonth(year, month);
       // normalize to avoid undefined fields
       const normalized = (response.data || []).map((t: any) => ({
-        Id: t.Id, // ensure backend sends this
+        Id: String(t.Id), // cast to string
         Item: t.Item ?? "",
         Category: t.Category ?? "",
         Amount: Number(t.Amount ?? 0),
@@ -100,6 +100,32 @@ const TransactionDetails: React.FC = () => {
         prev.filter((t) => !selectedTransactions.some((sel) => sel.id === t.id))
       );
       setSelectedTransactions([]);
+    }
+  };
+
+  // Handler for deleting a single transaction
+  const handleDeleteTransaction = async (id: string, item: string) => { // id is now string
+    const ok = window.confirm(`Delete "${item}"?`);
+    if (!ok) return;
+
+    // optimistic update
+    const prev = transactions;
+    setTransactions((p) => p.filter((t) => t.Id !== id));
+
+    const result = await deleteTransaction("112341234");
+    if (!result.ok) {
+      // rollback on failure
+      setTransactions(prev);
+      if (result.status === 400) {
+        alert(`Cannot delete "${item}": ${result.message || "Bad request."}`);
+      } else if (result.status === 500) {
+        alert(`Server error while deleting "${item}". Please try again.`);
+      } else {
+        alert(`Delete failed (${result.status || "network error"}): ${result.message}`);
+      }
+    } else {
+      // success (200)
+      // optional: alert("Deleted successfully");
     }
   };
 
@@ -340,14 +366,7 @@ const TransactionDetails: React.FC = () => {
                 className="pi pi-trash"
                 style={{ color: "#d32f2f", fontSize: "1.1rem", cursor: "pointer" }}
                 title="Delete"
-                onClick={() => {
-                  const confirmDelete = window.confirm(
-                    `Are you sure you want to delete transaction "${rowData.Item}"?`
-                  );
-                  if (confirmDelete) {
-                    setTransactions((prev) => prev.filter((t) => t.Id !== rowData.Id));
-                  }
-                }}
+                onClick={() => handleDeleteTransaction(rowData.Id, rowData.Item)}
               />
             </span>
           )}
