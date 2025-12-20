@@ -112,7 +112,7 @@ const TransactionDetails: React.FC = () => {
     const prev = transactions;
     setTransactions((p) => p.filter((t) => t.Id !== id));
 
-    const result = await deleteTransaction("112341234");
+    const result = await deleteTransaction(id);
     if (!result.ok) {
       // rollback on failure
       setTransactions(prev);
