@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
@@ -8,6 +8,7 @@ import { Tag } from "primereact/tag";
 import { Dialog } from 'primereact/dialog';
 import TransactionForm from "./TransactionForm";
 import { Checkbox } from "primereact/checkbox";
+import { Toast } from "primereact/toast";
 
 interface Transaction {
   Id: string;
@@ -29,6 +30,8 @@ const TransactionDetails: React.FC = () => {
   const [createdTimeFilter, setCreatedTimeFilter] = useState<string>("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(8);
   const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
+  const toast = useRef<Toast | null>(null);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
 
   useEffect(() => {
@@ -125,7 +128,13 @@ const TransactionDetails: React.FC = () => {
       }
     } else {
       // success (200)
-      // optional: alert("Deleted successfully");
+      // Show success toast
+      toast.current?.show({
+        severity: "success",
+        summary: "Deleted",
+        detail: `Transaction "${item}" deleted.`,
+        life: 2500,
+      });
     }
   };
 
@@ -253,6 +262,8 @@ const TransactionDetails: React.FC = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
+      {/* Toast container */}
+      <Toast ref={toast} position="top-right" />
       <div style={{ display: "flex", alignItems: "center", gap: "1rem", border: "4px solid transparent" }}>
         <Calendar
           value={selectedDate}
@@ -276,7 +287,10 @@ const TransactionDetails: React.FC = () => {
         <Button
           label={saveTransactionsVisible ? "Saving Transaction" : "Save Transaction"}
           icon="pi pi-save"
-          onClick={() => setSaveTransactionsVisible(true)}
+          onClick={() => {
+            setEditingTransaction(null); //creat-new mode
+            setSaveTransactionsVisible(true);
+          }}
           loading={loading}
           className="p-button-rounded p-button-outlined"
         />
@@ -290,8 +304,39 @@ const TransactionDetails: React.FC = () => {
           style={{ marginLeft: 8 }}
         />
 
-        <Dialog header="Save Transaction!" visible={saveTransactionsVisible} style={{ width: '50vw' }} onHide={() => { if (!saveTransactionsVisible) return; setSaveTransactionsVisible(false); }}>
-          <TransactionForm />
+        <Dialog 
+          header={editingTransaction ? "Edit Transaction" : "Save Transaction!"} 
+          visible={saveTransactionsVisible} 
+          style={{ width: '50vw' }} 
+          onHide={() => { 
+            if (!saveTransactionsVisible) return; 
+            setSaveTransactionsVisible(false);
+            setEditingTransaction(null);
+          }}>
+          {editingTransaction ? (
+            <TransactionForm
+              initial={{
+                Item: editingTransaction.Item,
+                CategoryLabel: editingTransaction.Category,
+                Amount: editingTransaction.Amount,
+                CreatedAt: editingTransaction.CreatedAt,
+              }}
+              disableItem
+              disableCategory
+              defaultUpdateIfExists
+              onClose={() => {
+                setSaveTransactionsVisible(false);
+                setEditingTransaction(null);
+              }}
+            />
+          ) : (
+            <TransactionForm
+              onClose={() => {
+                setSaveTransactionsVisible(false);
+                setEditingTransaction(null);
+              }}
+            />
+          )}
         </Dialog>
 
       </div>
@@ -360,7 +405,10 @@ const TransactionDetails: React.FC = () => {
                 className="pi pi-pencil"
                 style={{ color: "#1976d2", fontSize: "1.1rem", cursor: "pointer" }}
                 title="Edit"
-                onClick={() => alert(`Edit transaction: ${rowData.Item}`)}
+                onClick={() => {
+                  setEditingTransaction(rowData);
+                  setSaveTransactionsVisible(true);
+                }}
               />
               <i
                 className="pi pi-trash"
