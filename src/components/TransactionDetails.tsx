@@ -7,7 +7,6 @@ import { getTransactionsDetialsByMonth, deleteTransaction } from "../api/transac
 import { Tag } from "primereact/tag";
 import { Dialog } from 'primereact/dialog';
 import TransactionForm from "./TransactionForm";
-import { Checkbox } from "primereact/checkbox";
 import { Toast } from "primereact/toast";
 
 interface Transaction {
@@ -100,7 +99,7 @@ const TransactionDetails: React.FC = () => {
     );
     if (confirmDelete) {
       setTransactions((prev) =>
-        prev.filter((t) => !selectedTransactions.some((sel) => sel.id === t.id))
+        prev.filter((t) => !selectedTransactions.some((sel) => sel.Id === t.Id))
       );
       setSelectedTransactions([]);
     }
@@ -304,12 +303,12 @@ const TransactionDetails: React.FC = () => {
           style={{ marginLeft: 8 }}
         />
 
-        <Dialog 
-          header={editingTransaction ? "Edit Transaction" : "Save Transaction!"} 
-          visible={saveTransactionsVisible} 
-          style={{ width: '50vw' }} 
-          onHide={() => { 
-            if (!saveTransactionsVisible) return; 
+        <Dialog
+          header={editingTransaction ? "Edit Transaction" : "Save Transaction!"}
+          visible={saveTransactionsVisible}
+          style={{ width: '50vw' }}
+          onHide={() => {
+            if (!saveTransactionsVisible) return;
             setSaveTransactionsVisible(false);
             setEditingTransaction(null);
           }}>
@@ -378,48 +377,52 @@ const TransactionDetails: React.FC = () => {
         />
       </div>
       <DataTable
-        value={filteredTransactions}
-        paginator
-        rows={rowsPerPage}
-        stripedRows
-        emptyMessage="No transactions found."
-        size="small"
-        selection={selectedTransactions}
-        onSelectionChange={(e) => setSelectedTransactions(e.value as Transaction[])}
-        dataKey="Id"
-      >
-        <Column selectionMode="multiple" headerStyle={{ width: '3em' }} />
-        <Column field="Item" header="Item" />
-        <Column field="Category" header="Category" />
-        <Column field="Amount" header="Amount" />
-        <Column
-          field="CreatedAt"
-          header="Created At"
-          body={(rowData) => dateTemplate(rowData.CreatedAt)}
+  value={filteredTransactions}
+  paginator
+  rows={rowsPerPage}
+  stripedRows
+  emptyMessage="No transactions found."
+  size="small"
+  selectionMode="multiple" // disambiguate row-multiple selection
+  selection={selectedTransactions}
+  onSelectionChange={(e) => {
+    const next = Array.isArray(e.value) ? (e.value as Transaction[]) : [];
+    setSelectedTransactions(next);
+  }}
+  dataKey="Id"
+>
+  <Column selectionMode="multiple" headerStyle={{ width: '3em' }} />
+  <Column field="Item" header="Item" />
+  <Column field="Category" header="Category" />
+  <Column field="Amount" header="Amount" />
+  <Column
+    field="CreatedAt"
+    header="Created At"
+    body={(rowData) => dateTemplate(rowData.CreatedAt)}
+  />
+  <Column
+    header="Actions"
+    body={(rowData: Transaction) => (
+      <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <i
+          className="pi pi-pencil"
+          style={{ color: "#1976d2", fontSize: "1.1rem", cursor: "pointer" }}
+          title="Edit"
+          onClick={() => {
+            setEditingTransaction(rowData);
+            setSaveTransactionsVisible(true);
+          }}
         />
-        <Column
-          header="Actions"
-          body={(rowData: Transaction) => (
-            <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <i
-                className="pi pi-pencil"
-                style={{ color: "#1976d2", fontSize: "1.1rem", cursor: "pointer" }}
-                title="Edit"
-                onClick={() => {
-                  setEditingTransaction(rowData);
-                  setSaveTransactionsVisible(true);
-                }}
-              />
-              <i
-                className="pi pi-trash"
-                style={{ color: "#d32f2f", fontSize: "1.1rem", cursor: "pointer" }}
-                title="Delete"
-                onClick={() => handleDeleteTransaction(rowData.Id, rowData.Item)}
-              />
-            </span>
-          )}
+        <i
+          className="pi pi-trash"
+          style={{ color: "#d32f2f", fontSize: "1.1rem", cursor: "pointer" }}
+          title="Delete"
+          onClick={() => handleDeleteTransaction(rowData.Id, rowData.Item)}
         />
-      </DataTable>
+      </span>
+    )}
+  />
+</DataTable>
     </div>
   );
 };
