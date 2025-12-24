@@ -17,9 +17,12 @@ export async function getMonthEndSummaryForMonth(year: number, month: number) {
   return api.get(`/monthEnd?year=${year}&month=${month}`)
 }
 
-export async function deleteTransaction(id: string): Promise<{ ok: boolean; status: number; data?: any; message?: string }> {
+// DELETE /transactions with body: ["id1","id2",...]
+export async function deleteTransactions(
+  ids: string[]
+): Promise<{ ok: boolean; status: number; data?: any; message?: string }> {
   try {
-    const res = await api.delete(`/transaction/${id}`);
+    const res = await api.delete(`/transactions`, { data: ids });
     return { ok: true, status: res.status, data: res.data };
   } catch (err: any) {
     const status = err?.response?.status ?? 0;

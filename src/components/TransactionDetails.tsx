@@ -3,7 +3,7 @@ import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { getTransactionsDetialsByMonth, deleteTransaction } from "../api/transactionApi";
+import { getTransactionsDetialsByMonth, deleteTransactions } from "../api/transactionApi";
 import { Tag } from "primereact/tag";
 import { Dialog } from 'primereact/dialog';
 import TransactionForm from "./TransactionForm";
@@ -89,35 +89,74 @@ const TransactionDetails: React.FC = () => {
   };
 
   // Handler for deleting selected transactions
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     if (selectedTransactions.length === 0) {
       alert("No transactions selected for deletion.");
       return;
     }
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete ${selectedTransactions.length} selected transaction(s)?`
+
+    const ok = window.confirm(
+      `Delete ${selectedTransactions.length} selected transaction(s)?`
     );
-    if (confirmDelete) {
-      setTransactions((prev) =>
-        prev.filter((t) => !selectedTransactions.some((sel) => sel.Id === t.Id))
-      );
+    if (!ok) return;
+
+    const ids = selectedTransactions.map((tx) => tx.Id);
+    const prev = transactions;
+
+    // optional: show loading
+    setLoading(true);
+
+    try {
+      const result = await deleteTransactions(ids);
+      if (!result.ok) {
+        // rollback on failure
+        setTransactions(prev);
+        if (result.status === 400) {
+          alert(`Cannot delete: ${result.message || "Bad request."}`);
+        } else if (result.status === 500) {
+          alert(`Server error while deleting. Please try again.`);
+        } else {
+          alert(`Delete failed (${result.status || "network error"}): ${result.message}`);
+        }
+        return;
+      }
+
+      // success: remove deleted items and clear selection
+      setTransactions((prev) => prev.filter((t) => !ids.includes(t.Id)));
       setSelectedTransactions([]);
+
+      toast.current?.show({
+        severity: "success",
+        summary: "Deleted",
+        detail: `Deleted ${ids.length} transaction(s).`,
+        life: 2500,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   // Handler for deleting a single transaction
-  const handleDeleteTransaction = async (id: string, item: string) => { // id is now string
+  const handleDeleteTransaction = async (id: string, item: string) => {
     const ok = window.confirm(`Delete "${item}"?`);
     if (!ok) return;
 
-    // optimistic update
     const prev = transactions;
-    setTransactions((p) => p.filter((t) => t.Id !== id));
 
-    const result = await deleteTransaction(id);
+    // optimistic update
+    setTransactions((p) => p.filter((t) => t.Id !== id));
+    // also remove from selection to avoid ghost selection
+    setSelectedTransactions((sel) => sel.filter((t) => t.Id !== id));
+
+    const result = await deleteTransactions([id]);
     if (!result.ok) {
       // rollback on failure
       setTransactions(prev);
+      // restore selection if rollback
+      setSelectedTransactions((sel) => {
+        const wasDeletedSelected = sel.some((t) => t.Id === id);
+        return wasDeletedSelected ? sel : [...sel, ...prev.filter((t) => t.Id === id)];
+      });
       if (result.status === 400) {
         alert(`Cannot delete "${item}": ${result.message || "Bad request."}`);
       } else if (result.status === 500) {
@@ -126,8 +165,6 @@ const TransactionDetails: React.FC = () => {
         alert(`Delete failed (${result.status || "network error"}): ${result.message}`);
       }
     } else {
-      // success (200)
-      // Show success toast
       toast.current?.show({
         severity: "success",
         summary: "Deleted",
@@ -258,6 +295,12 @@ const TransactionDetails: React.FC = () => {
     return ItemMatch && CategoryMatch && dateMatch;
   });
 
+  useEffect(() => {
+  setSelectedTransactions((sel) =>
+    sel.filter((s) => filteredTransactions.some((f) => f.Id === s.Id))
+  );
+}, [filteredTransactions]);
+
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -377,52 +420,52 @@ const TransactionDetails: React.FC = () => {
         />
       </div>
       <DataTable
-  value={filteredTransactions}
-  paginator
-  rows={rowsPerPage}
-  stripedRows
-  emptyMessage="No transactions found."
-  size="small"
-  selectionMode="multiple" // disambiguate row-multiple selection
-  selection={selectedTransactions}
-  onSelectionChange={(e) => {
-    const next = Array.isArray(e.value) ? (e.value as Transaction[]) : [];
-    setSelectedTransactions(next);
-  }}
-  dataKey="Id"
->
-  <Column selectionMode="multiple" headerStyle={{ width: '3em' }} />
-  <Column field="Item" header="Item" />
-  <Column field="Category" header="Category" />
-  <Column field="Amount" header="Amount" />
-  <Column
-    field="CreatedAt"
-    header="Created At"
-    body={(rowData) => dateTemplate(rowData.CreatedAt)}
-  />
-  <Column
-    header="Actions"
-    body={(rowData: Transaction) => (
-      <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-        <i
-          className="pi pi-pencil"
-          style={{ color: "#1976d2", fontSize: "1.1rem", cursor: "pointer" }}
-          title="Edit"
-          onClick={() => {
-            setEditingTransaction(rowData);
-            setSaveTransactionsVisible(true);
-          }}
+        value={filteredTransactions}
+        paginator
+        rows={rowsPerPage}
+        stripedRows
+        emptyMessage="No transactions found."
+        size="small"
+        selectionMode="multiple" // disambiguate row-multiple selection
+        selection={selectedTransactions}
+        onSelectionChange={(e) => {
+          const next = Array.isArray(e.value) ? (e.value as Transaction[]) : [];
+          setSelectedTransactions(next);
+        }}
+        dataKey="Id"
+      >
+        <Column selectionMode="multiple" headerStyle={{ width: '3em' }} />
+        <Column field="Item" header="Item" />
+        <Column field="Category" header="Category" />
+        <Column field="Amount" header="Amount" />
+        <Column
+          field="CreatedAt"
+          header="Created At"
+          body={(rowData) => dateTemplate(rowData.CreatedAt)}
         />
-        <i
-          className="pi pi-trash"
-          style={{ color: "#d32f2f", fontSize: "1.1rem", cursor: "pointer" }}
-          title="Delete"
-          onClick={() => handleDeleteTransaction(rowData.Id, rowData.Item)}
+        <Column
+          header="Actions"
+          body={(rowData: Transaction) => (
+            <span style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <i
+                className="pi pi-pencil"
+                style={{ color: "#1976d2", fontSize: "1.1rem", cursor: "pointer" }}
+                title="Edit"
+                onClick={() => {
+                  setEditingTransaction(rowData);
+                  setSaveTransactionsVisible(true);
+                }}
+              />
+              <i
+                className="pi pi-trash"
+                style={{ color: "#d32f2f", fontSize: "1.1rem", cursor: "pointer" }}
+                title="Delete"
+                onClick={() => handleDeleteTransaction(rowData.Id, rowData.Item)}
+              />
+            </span>
+          )}
         />
-      </span>
-    )}
-  />
-</DataTable>
+      </DataTable>
     </div>
   );
 };
