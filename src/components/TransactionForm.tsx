@@ -21,13 +21,30 @@ type TransactionFormInitial = {
   CreatedAt?: string; // "dd.MM.yyyy HH:mm:ss.SSS" or ISO
 };
 
+type SavedTransactionPayload = {
+  Id?: string;
+  Item: string;
+  CategoryLabel: string;
+  Amount: number;
+  CreatedAt?: string;
+};
+
 interface TransactionFormProps {
   initial?: TransactionFormInitial;
   disableItem?: boolean;
   disableCategory?: boolean;
   defaultUpdateIfExists?: boolean;
   onClose?: () => void;
+  onSaved?: (list: SavedTransactionPayload[]) => void; // NEW: notify parent
 }
+
+// interface TransactionFormProps {
+//   initial?: TransactionFormInitial;
+//   disableItem?: boolean;
+//   disableCategory?: boolean;
+//   defaultUpdateIfExists?: boolean;
+//   onClose?: () => void;
+// }
 
 const TransactionForm: React.FC<TransactionFormProps> = ({
   initial,
@@ -35,6 +52,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   disableCategory = false,
   defaultUpdateIfExists = false,
   onClose,
+  onSaved
 }) => {
   const [Item, setDescription] = useState(initial?.Item ?? "");
   const [CategoryNumber, setCategoryNumber] = useState<number | null>(null);
@@ -118,32 +136,48 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Require a date if UseCreatedAt is checked
-    if (UseCreatedAt && !CreatedAt) {
-      alert("Please select CreatedAt date/time.");
+    if (!Item.trim()) {
+      alert("Item is required.");
+      return;
+    }
+    if (CategoryNumber == null) {
+      alert("Category is required.");
       return;
     }
 
-    // Format to "dd.MM.yyyy HH:mm:ss.SSS" when enabled
-    const formattedCreatedAt = UseCreatedAt && CreatedAt ? formatDateTime(CreatedAt) : undefined;
+    // Always send CreatedAt:
+    // - if UseCreatedAt is checked and a date is chosen -> use that
+    // - otherwise -> use current date/time
+    const effectiveDate = UseCreatedAt && CreatedAt ? CreatedAt : new Date();
+    const formattedCreatedAt = formatDateTime(effectiveDate);
+
+    const payload = {
+      Item,
+      CategoryNumber,
+      Amount: Number(Amount),
+      UpdateIfExists,
+      UseCreatedAt,
+      CreatedAt: formattedCreatedAt,
+    };
 
     try {
-      const payload = {
-        Item,
-        CategoryNumber,
-        Amount: Number(Amount),
-        UpdateIfExists,
-        UseCreatedAt,
-        // send the exact string format, do NOT send a Date object
-        CreatedAt: formattedCreatedAt,
-      };
       const res = await saveTransaction(payload);
 
-      console.log("Saved:", res.data);
-      alert("Transaction saved successfully!");
-      onClose?.(); // close dialog after success
+      const catLabel =
+        categories.find((c) => c.value === CategoryNumber)?.label ?? initial?.CategoryLabel ?? "";
+
+      const saved: SavedTransactionPayload = {
+        Id: res?.data?.Id ?? res?.data?.id,
+        Item,
+        CategoryLabel: catLabel,
+        Amount: Number(Amount),
+        CreatedAt: formattedCreatedAt,
+      };
+
+      onSaved?.([saved]);
+      onClose?.();
     } catch (err) {
-      console.error(err);
+      console.error("Error saving transaction:", err);
       alert("Error saving transaction!");
     }
   };

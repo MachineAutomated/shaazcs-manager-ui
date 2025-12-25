@@ -296,10 +296,51 @@ const TransactionDetails: React.FC = () => {
   });
 
   useEffect(() => {
-  setSelectedTransactions((sel) =>
-    sel.filter((s) => filteredTransactions.some((f) => f.Id === s.Id))
-  );
-}, [filteredTransactions]);
+    setSelectedTransactions((sel) =>
+      sel.filter((s) => filteredTransactions.some((f) => f.Id === s.Id))
+    );
+  }, [filteredTransactions]);
+
+  const upsertFromPayload = (list: Array<{
+    Id?: string;
+    Item: string;
+    CategoryLabel: string;
+    Amount: number;
+    CreatedAt?: string;
+  }>) => {
+    setTransactions((prev) => {
+      const next = [...prev];
+      for (const p of list) {
+        const byIdIdx = p.Id ? next.findIndex((t) => t.Id === p.Id) : -1;
+        const byKeyIdx =
+          byIdIdx === -1
+            ? next.findIndex((t) => t.Item === p.Item && t.Category === p.CategoryLabel)
+            : -1;
+
+        const base: Transaction = {
+          Id:
+            p.Id ??
+            (byKeyIdx !== -1 ? next[byKeyIdx].Id : (window.crypto?.randomUUID?.() ?? String(Date.now()))),
+          Item: p.Item,
+          Category: p.CategoryLabel,
+          Amount: p.Amount,
+          CreatedAt: p.CreatedAt ?? "",
+        };
+
+        if (byIdIdx !== -1) {
+          next[byIdIdx] = base; // replace by Id
+        } else if (byKeyIdx !== -1) {
+          next[byKeyIdx] = { ...base, Id: next[byKeyIdx].Id }; // preserve existing Id
+        } else {
+          next.unshift(base); // add new at top
+        }
+      }
+      return next;
+    });
+
+    // Clear selection to avoid stale IDs after upsert
+    setSelectedTransactions([]);
+  };
 
 
   return (
@@ -366,6 +407,17 @@ const TransactionDetails: React.FC = () => {
               disableItem
               disableCategory
               defaultUpdateIfExists
+              onSaved={(list) => {
+                upsertFromPayload(list);
+                toast.current?.show({
+                  severity: "success",
+                  summary: "Saved",
+                  detail: `Transaction "${list[0].Item}" updated.`,
+                  life: 2500,
+                });
+                setSaveTransactionsVisible(false);
+                setEditingTransaction(null);
+              }}
               onClose={() => {
                 setSaveTransactionsVisible(false);
                 setEditingTransaction(null);
@@ -373,6 +425,17 @@ const TransactionDetails: React.FC = () => {
             />
           ) : (
             <TransactionForm
+              onSaved={(list) => {
+                upsertFromPayload(list);
+                toast.current?.show({
+                  severity: "success",
+                  summary: "Saved",
+                  detail: `Transaction "${list[0].Item}" added.`,
+                  life: 2500,
+                });
+                setSaveTransactionsVisible(false);
+                setEditingTransaction(null);
+              }}
               onClose={() => {
                 setSaveTransactionsVisible(false);
                 setEditingTransaction(null);
