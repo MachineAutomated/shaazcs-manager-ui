@@ -9,16 +9,92 @@ import { confirmDialog } from 'primereact/confirmdialog';
 import { ConfirmDialog } from 'primereact/confirmdialog';
 import type { MenuItem } from 'primereact/menuitem';
 import api from '../api/api';
+import { Dialog } from 'primereact/dialog';
 
 export default function TopBar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const menu = useRef<Menu | null>(null);
+
+  // JWT countdown state
+  const [remainingMs, setRemainingMs] = useState(0);
+  const [showCountdown, setShowCountdown] = useState(false);
+  const [promptVisible, setPromptVisible] = useState(false);
+
+  const mmss = (ms: number) => {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const mm = String(Math.floor(s / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    return `${mm}:${ss}`;
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 30);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const SHOW_MS = 5 * 60 * 1000;   // show timer in top bar when <= 5m
+    const PROMPT_MS = 2 * 60 * 1000; // show dialog when <= 2m
+
+    const tick = () => {
+      const expIso = sessionStorage.getItem('jwtExpiresAt');
+      if (!expIso) {
+        setRemainingMs(0);
+        setShowCountdown(false);
+        setPromptVisible(false);
+        return;
+      }
+      const exp = new Date(expIso).getTime();
+      const rem = exp - Date.now();
+
+      if (rem <= 0) {
+        // expired -> clear and redirect
+        sessionStorage.removeItem('jwt');
+        sessionStorage.removeItem('jwtExpiresAt');
+        window.location.href = '/login';
+        return;
+      }
+
+      setRemainingMs(rem);
+      setShowCountdown(rem <= SHOW_MS);
+      setPromptVisible(rem <= PROMPT_MS);
+    };
+
+    // start ticking
+    tick();
+    const iv = window.setInterval(tick, 1000);
+
+    // when login refreshes/starts a new session
+    const onJwtStart = () => tick();
+    window.addEventListener('jwt-start', onJwtStart);
+
+    return () => {
+      window.clearInterval(iv);
+      window.removeEventListener('jwt-start', onJwtStart);
+    };
+  }, []);
+
+  const handleExtendSession = async () => {
+    try {
+      // Adjust endpoint as per your backend
+      const res = await api.post('/refresh');
+      const token = res?.data?.token;
+      const expiresAt =
+        res?.data?.expiresAt ?? new Date(Date.now() + 3600000).toISOString();
+      if (!token) throw new Error('No token');
+
+      sessionStorage.setItem('jwt', token);
+      sessionStorage.setItem('jwtExpiresAt', expiresAt);
+      setPromptVisible(false);
+      // notify listeners
+      window.dispatchEvent(new CustomEvent('jwt-start', { detail: { expiresAt } }));
+    } catch {
+      sessionStorage.removeItem('jwt');
+      sessionStorage.removeItem('jwtExpiresAt');
+      window.location.href = '/login';
+    }
+  };
 
   // Handlers (replace stubs with real logic)
   const handleProfileUpdate = () => {
@@ -106,6 +182,16 @@ export default function TopBar() {
   // End: user icon that toggles popup menu
   const end = (
     <div className="flex align-items-center gap-2">
+      {/* Countdown visible only in last 5 minutes */}
+      {showCountdown && (
+        <span
+          title="Session remaining"
+          style={{ color: '#f5f9fb02', fontWeight: 800, marginRight: 8}}
+        >
+          {mmss(remainingMs)}
+        </span>
+      )}
+
       {/* Menu component (popup); model provided below */}
       <Menu model={items} popup ref={menu} />
 
@@ -123,6 +209,27 @@ export default function TopBar() {
     <div className={`topbar-container ${isScrolled ? 'scrolled' : ''}`}>
       {/* ConfirmDialog used by menu actions */}
       <ConfirmDialog />
+
+      {/* Session-expiring dialog (shows at T-2m) */}
+      <Dialog
+        visible={promptVisible}
+        header="Session Expiring"
+        onHide={() => setPromptVisible(false)}
+        style={{ width: '26rem' }}
+      >
+        <p>
+          Jwt will expire in {mmss(remainingMs)}. Click yes if you want to continue
+          with the session or you will be redirected to the login page.
+        </p>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <Button
+            label="No"
+            className="p-button-outlined p-button-danger"
+            onClick={handleLogoutConfirmed}
+          />
+          <Button label="Yes" icon="pi pi-refresh" onClick={handleExtendSession} />
+        </div>
+      </Dialog>
 
       <Menubar start={start} end={end} className="topbar-menu" />
     </div>

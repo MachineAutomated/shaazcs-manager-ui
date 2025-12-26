@@ -35,6 +35,13 @@ const LoginPage: React.FC = () => {
       }
       sessionStorage.setItem("jwt", token);
       sessionStorage.setItem("username", username);
+
+      // ADD BELOW: start 1h timer and notify app
+      const expiresAt = new Date(Date.now() + 3600000).toISOString(); //Todo: 3600000 will be customized later with environment variable
+      // const expiresAt = new Date(Date.now() + 420000).toISOString(); //Todo: 3600000 will be customized later with environment variable
+      sessionStorage.setItem("jwtExpiresAt", expiresAt);
+      window.dispatchEvent(new CustomEvent("jwt-start", { detail: { expiresAt } }));
+
       navigate("/dashboard");
 
     } catch (err) {
