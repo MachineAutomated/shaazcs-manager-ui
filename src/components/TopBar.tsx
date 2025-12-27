@@ -10,15 +10,19 @@ import { ConfirmDialog } from 'primereact/confirmdialog';
 import type { MenuItem } from 'primereact/menuitem';
 import api from '../api/api';
 import { Dialog } from 'primereact/dialog';
+import { Tag } from 'primereact/tag';
+import { OverlayPanel } from 'primereact/overlaypanel';
 
 export default function TopBar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const menu = useRef<Menu | null>(null);
+  const countdownOverlay = useRef<OverlayPanel | null>(null);
 
   // JWT countdown state
   const [remainingMs, setRemainingMs] = useState(0);
   const [showCountdown, setShowCountdown] = useState(false);
   const [promptVisible, setPromptVisible] = useState(false);
+  const [promptForced, setPromptForced] = useState(false);
 
   const mmss = (ms: number) => {
     const s = Math.max(0, Math.floor(ms / 1000));
@@ -47,18 +51,22 @@ export default function TopBar() {
       }
       const exp = new Date(expIso).getTime();
       const rem = exp - Date.now();
+      // debug: help verify countdown visibility
+      if (import.meta.env.DEV) {
+        console.debug('[TopBar] JWT remaining (ms):', rem);
+      }
 
       if (rem <= 0) {
         // expired -> clear and redirect
         sessionStorage.removeItem('jwt');
         sessionStorage.removeItem('jwtExpiresAt');
-        window.location.href = '/login';
+        window.location.href = '/';
         return;
       }
 
       setRemainingMs(rem);
       setShowCountdown(rem <= SHOW_MS);
-      setPromptVisible(rem <= PROMPT_MS);
+      setPromptVisible(promptForced || rem <= PROMPT_MS);
     };
 
     // start ticking
@@ -73,26 +81,28 @@ export default function TopBar() {
       window.clearInterval(iv);
       window.removeEventListener('jwt-start', onJwtStart);
     };
-  }, []);
+  }, [promptForced]);
 
   const handleExtendSession = async () => {
     try {
       // Adjust endpoint as per your backend
-      const res = await api.post('/refresh');
+      const res = await api.post('/refreshLogin');
       const token = res?.data?.token;
       const expiresAt =
-        res?.data?.expiresAt ?? new Date(Date.now() + 3600000).toISOString();
+        res?.data?.expiresAt ?? new Date(Date.now() + 360000).toISOString();
       if (!token) throw new Error('No token');
 
       sessionStorage.setItem('jwt', token);
       sessionStorage.setItem('jwtExpiresAt', expiresAt);
       setPromptVisible(false);
+      setPromptForced(false);
       // notify listeners
       window.dispatchEvent(new CustomEvent('jwt-start', { detail: { expiresAt } }));
     } catch {
       sessionStorage.removeItem('jwt');
       sessionStorage.removeItem('jwtExpiresAt');
-      window.location.href = '/login';
+      setPromptForced(false);
+      window.location.href = '/';
     }
   };
 
@@ -181,15 +191,20 @@ export default function TopBar() {
 
   // End: user icon that toggles popup menu
   const end = (
-    <div className="flex align-items-center gap-2">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
       {/* Countdown visible only in last 5 minutes */}
       {showCountdown && (
-        <span
-          title="Session remaining"
-          style={{ color: '#f5f9fb02', fontWeight: 800, marginRight: 8}}
-        >
-          {mmss(remainingMs)}
-        </span>
+        <Tag
+          severity="warning"
+          icon="pi pi-clock"
+          value={mmss(remainingMs)}
+          rounded
+          className="mr-2 countdown-tag"
+          style={{ alignSelf: 'center', cursor: 'pointer' }}
+          onClick={() => { setPromptForced(true); setPromptVisible(true); }}
+          onMouseEnter={(e) => countdownOverlay.current?.show(e, e.currentTarget as HTMLElement)}
+          onMouseLeave={() => countdownOverlay.current?.hide()}
+        />
       )}
 
       {/* Menu component (popup); model provided below */}
@@ -210,11 +225,19 @@ export default function TopBar() {
       {/* ConfirmDialog used by menu actions */}
       <ConfirmDialog />
 
+      {/* Hover overlay for countdown tag */}
+      <OverlayPanel ref={countdownOverlay} showCloseIcon dismissable appendTo={document.body} style={{ zIndex: 2000 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <i className="pi pi-clock" />
+          <span>Extend Session</span>
+        </div>
+      </OverlayPanel>
+
       {/* Session-expiring dialog (shows at T-2m) */}
       <Dialog
         visible={promptVisible}
         header="Session Expiring"
-        onHide={() => setPromptVisible(false)}
+        onHide={() => { setPromptForced(false); setPromptVisible(false); }}
         style={{ width: '26rem' }}
       >
         <p>

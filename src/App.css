@@ -291,10 +291,11 @@ body::before {
   color: #d32f2f;
 }
 
-.p-button {
+/* Removed global .p-button override to restore PrimeReact theme colors */
+/* .p-button {
   border: 1px solid transparent;
   background-color: #e7ebee;
-}
+} */
 
 .sidebar-btn{
   width: 90%;
