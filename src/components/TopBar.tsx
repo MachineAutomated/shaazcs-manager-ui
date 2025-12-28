@@ -89,7 +89,7 @@ export default function TopBar() {
       const res = await api.post('/refreshLogin');
       const token = res?.data?.token;
       const expiresAt =
-        res?.data?.expiresAt ?? new Date(Date.now() + 360000).toISOString();
+        res?.data?.expiresAt ?? new Date(Date.now() + 3600000).toISOString();
       if (!token) throw new Error('No token');
 
       sessionStorage.setItem('jwt', token);
