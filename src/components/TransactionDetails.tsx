@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
@@ -264,41 +264,48 @@ const TransactionDetails: React.FC = () => {
     }));
 
   // Filter transactions dynamically based on input
-  // Safe filtering (handles undefined/null values)
-  const filteredTransactions = transactions.filter((tx) => {
-    const ItemVal = (tx.Item ?? "").toString().toLowerCase();
-    const CategoryVal = (tx.Category ?? "").toString().toLowerCase();
+  // Memoized to avoid new array reference each render
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter((tx) => {
+      const ItemVal = (tx.Item ?? "").toString().toLowerCase();
+      const CategoryVal = (tx.Category ?? "").toString().toLowerCase();
 
-    const ItemMatch = ItemVal.includes(ItemFilter.trim().toLowerCase());
-    const CategoryMatch = CategoryVal.includes(CategoryFilter.trim().toLowerCase());
+      const ItemMatch = ItemVal.includes(ItemFilter.trim().toLowerCase());
+      const CategoryMatch = CategoryVal.includes(CategoryFilter.trim().toLowerCase());
 
-    // CreatedAt filter
-    let dateMatch = true;
-    if (createdDateFilter) {
-      const txDate = parseDateString(tx.CreatedAt);
-      if (txDate) {
-        const filterDateStr = createdDateFilter.toLocaleDateString("en-GB"); // dd/mm/yyyy
-        const txDateStr = txDate.toLocaleDateString("en-GB");
+      // CreatedAt filter
+      let dateMatch = true;
+      if (createdDateFilter) {
+        const txDate = parseDateString(tx.CreatedAt);
+        if (txDate) {
+          const filterDateStr = createdDateFilter.toLocaleDateString("en-GB"); // dd/mm/yyyy
+          const txDateStr = txDate.toLocaleDateString("en-GB");
 
-        if (filterDateStr !== txDateStr) {
+          if (filterDateStr !== txDateStr) {
+            dateMatch = false;
+          } else if (createdTimeFilter.trim()) {
+            // Optional time filter (format: HH:mm)
+            const [filterH, filterM] = createdTimeFilter.split(":").map(Number);
+            dateMatch = txDate.getHours() === filterH && txDate.getMinutes() === filterM;
+          }
+        } else {
           dateMatch = false;
-        } else if (createdTimeFilter.trim()) {
-          // Optional time filter (format: HH:mm)
-          const [filterH, filterM] = createdTimeFilter.split(":").map(Number);
-          dateMatch = txDate.getHours() === filterH && txDate.getMinutes() === filterM;
         }
-      } else {
-        dateMatch = false;
       }
-    }
 
-    return ItemMatch && CategoryMatch && dateMatch;
-  });
+      return ItemMatch && CategoryMatch && dateMatch;
+    });
+  }, [transactions, ItemFilter, CategoryFilter, createdDateFilter, createdTimeFilter]);
 
+  // Keep selection in sync with visible rows without causing re-render loops
   useEffect(() => {
-    setSelectedTransactions((sel) =>
-      sel.filter((s) => filteredTransactions.some((f) => f.Id === s.Id))
-    );
+    setSelectedTransactions((sel) => {
+      const allowedIds = new Set(filteredTransactions.map((f) => f.Id));
+      const next = sel.filter((s) => allowedIds.has(s.Id));
+      // If selection hasn't changed, return the same reference to avoid updates
+      if (next.length === sel.length) return sel;
+      return next;
+    });
   }, [filteredTransactions]);
 
   const upsertFromPayload = (list: Array<{

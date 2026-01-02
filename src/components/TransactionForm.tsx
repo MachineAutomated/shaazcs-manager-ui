@@ -12,6 +12,7 @@ import { Button } from 'primereact/button';
 interface CategoryOption {
   label: string;
   value: number;
+  type?: "IN" | "OUT";
 }
 
 type TransactionFormInitial = {
@@ -70,14 +71,26 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        // const response = await getCategories();
         const response = await getCategories();
-        const map: Map<number, string> = objectToMap(response.data);
-        // Convert Map → array for PrimeReact dropdown
-        const options: CategoryOption[] = Array.from(map, ([value, label]) => ({
-          label,
-          value,
-        }));
+        const data = response?.data;
+        let options: CategoryOption[] = [];
+
+        if (Array.isArray(data)) {
+          // New API shape: [{ id, name, type }]
+          type CategoryResponse = { id: number | string; name: string; type?: string };
+          options = (data as CategoryResponse[])
+            .map((c) => ({
+              label: String(c?.name ?? ""),
+              value: Number(c?.id),
+              type: c?.type === "IN" || c?.type === "OUT" ? (c.type as "IN" | "OUT") : undefined,
+            }))
+            .filter((o: CategoryOption) => !!o.label && !Number.isNaN(o.value));
+        } else if (data && typeof data === "object") {
+          // Back-compat: { "1": "GROCERY", ... }
+          const map: Map<number, string> = objectToMap(data);
+          options = Array.from(map, ([value, label]) => ({ label, value }));
+        }
+
         setCategories(options);
 
         // If editing, set category by label
@@ -109,7 +122,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
   // Helpers for parsing/formatting (keep minimal)
   const parseToDate = (s: string): Date | null => {
-    const dmy = /^(\d{1,2})[.\-\/](\d{1,2})[.\-\/](\d{4})(?:\s+|T)(\d{1,2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?$/;
+    const dmy = /^(\d{1,2})[-./](\d{1,2})[-./](\d{4})(?:\s+|T)(\d{1,2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?$/;
     const m = s.trim().match(dmy);
     if (m) {
       const day = +m[1], mon = +m[2], yr = +m[3];
@@ -201,8 +214,10 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   };
 
   // Calendar change handler
-  const handleDateChange = (e: any) => {
-    const selectedDate = e.value as Date;
+  type MaybeValueEvent = { value?: Date | Date[] | null };
+  const handleDateChange = (e: unknown) => {
+    const { value } = (e as MaybeValueEvent) ?? {};
+    const selectedDate = (value ?? null) as Date | null;
     setCreatedAt(selectedDate);
     const formatted = formatDateTime(selectedDate);
     setFormattedDate(formatted);
