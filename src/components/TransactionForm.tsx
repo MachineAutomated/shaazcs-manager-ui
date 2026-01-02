@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { saveTransaction } from "../api/transactionApi";
-import { getCategories } from "../api/utilitiesApi";
+import { getCategories, createCategories } from "../api/utilitiesApi";
 import { Checkbox } from 'primereact/checkbox';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
@@ -66,7 +66,68 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [formattedDate, setFormattedDate] = useState<string>("");
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryType, setNewCategoryType] = useState<"IN" | "OUT">("IN");
+  const [creatingCategory, setCreatingCategory] = useState(false);
 
+  const typeOptions: Array<{ label: string; value: "IN" | "OUT" }> = [
+    { label: "IN", value: "IN" },
+    { label: "OUT", value: "OUT" },
+  ];
+
+  const typeItemTemplate = (option: { label: string; value: "IN" | "OUT" }) => (
+    <span
+      style={{
+        color: option.value === "IN" ? "#2e7d32" : "#d32f2f",
+        fontWeight: 600,
+        fontFamily: "monospace",
+      }}
+    >
+      {option.value === "IN" ? "+" : "-"}
+    </span>
+  );
+
+  const typeValueTemplate = (option?: { label: string; value: "IN" | "OUT" }) => (
+    <span
+      style={{
+        color: (option?.value ?? newCategoryType) === "IN" ? "#2e7d32" : "#d32f2f",
+        fontWeight: 600,
+        fontFamily: "monospace",
+      }}
+    >
+      {(option?.value ?? newCategoryType) === "IN" ? "+" : "-"}
+    </span>
+  );
+
+
+    // Render '+' (green) or '-' (red) next to category names in the dropdown
+    const categoryItemTemplate = (option: CategoryOption) => {
+      const hasType = option.type === "IN" || option.type === "OUT";
+      const symbol = option.type === "IN" ? "+" : option.type === "OUT" ? "-" : "";
+      const color = option.type === "IN" ? "#2e7d32" : option.type === "OUT" ? "#d32f2f" : undefined;
+      return (
+        <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {hasType && (
+            <span style={{ color, fontWeight: 600, fontFamily: "monospace" }}>{symbol}</span>
+          )}
+          <span>{option.label}</span>
+        </span>
+      );
+    };
+    const categoryValueTemplate = (option?: CategoryOption) => {
+      if (!option) return <span>Category</span>;
+      const hasType = option.type === "IN" || option.type === "OUT";
+      const symbol = option.type === "IN" ? "+" : option.type === "OUT" ? "-" : "";
+      const color = option.type === "IN" ? "#2e7d32" : option.type === "OUT" ? "#d32f2f" : undefined;
+      return (
+        <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {hasType && (
+            <span style={{ color, fontWeight: 600, fontFamily: "monospace" }}>{symbol}</span>
+          )}
+          <span>{option.label}</span>
+        </span>
+      );
+    };
   //Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
@@ -223,6 +284,43 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     setFormattedDate(formatted);
   };
 
+  const handleAddCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) {
+      alert("Category name is required.");
+      return;
+    }
+    setCreatingCategory(true);
+    try {
+      await createCategories([{ Name: name, Type: newCategoryType }]);
+      const resp = await getCategories();
+      const data = resp?.data;
+      let options: CategoryOption[] = [];
+      if (Array.isArray(data)) {
+        type CategoryResponse = { id: number | string; name: string; type?: string };
+        options = (data as CategoryResponse[])
+          .map((c) => ({
+            label: String(c?.name ?? ""),
+            value: Number(c?.id),
+            type: c?.type === "IN" || c?.type === "OUT" ? (c.type as "IN" | "OUT") : undefined,
+          }))
+          .filter((o: CategoryOption) => !!o.label && !Number.isNaN(o.value));
+      } else if (data && typeof data === "object") {
+        const map: Map<number, string> = objectToMap(data);
+        options = Array.from(map, ([value, label]) => ({ label, value }));
+      }
+      setCategories(options);
+      const created = options.find((o) => o.label.toLowerCase() === name.toLowerCase());
+      if (created) setCategoryNumber(created.value);
+      setNewCategoryName("");
+    } catch (err) {
+      console.error("Error creating category:", err);
+      alert("Failed to create category.");
+    } finally {
+      setCreatingCategory(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="card ">
       <div className="card flex justify-content-center">
@@ -239,16 +337,58 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       {loadingCategories ? (
         <p>Loading categories...</p>
       ) : (
-        <div className="card flex justify-content-center">
+        <div
+          className="transaction-form-components"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "2px",
+            flexWrap: "nowrap",
+            justifyContent: "flex-start",
+            width: "100%",
+            
+            padding: "0",
+            overflowX: "auto",
+          }}
+        >
           <Dropdown
             value={CategoryNumber}
             options={categories}
             onChange={(e) => setCategoryNumber(e.value)}
             disabled={disableCategory || loadingCategories}
-            placeholder="Select Category"
-            filter     // enables search
-            showClear  // adds clear (X) button
+            placeholder="Category"
+            filter
+            showClear
+            className="centered-dropdown"
+            itemTemplate={categoryItemTemplate}
+            valueTemplate={categoryValueTemplate}
+            style={{ minWidth: "50%", height: "2.5rem"}}
+          />
+          <InputText
+            type="text"
             className="transaction-form-components"
+            value={newCategoryName}
+            placeholder="New Category"
+            onChange={(e) => setNewCategoryName(e.target.value)}
+            style={{ width: "30%", height: "2.5rem" }}
+          />
+          <Dropdown
+            value={newCategoryType}
+            options={typeOptions}
+            className="centered-dropdown"
+            onChange={(e) => setNewCategoryType(e.value)}
+            placeholder="Type"
+            style={{ width: "12%",  height: "2.5rem"}}
+            itemTemplate={typeItemTemplate}
+            valueTemplate={typeValueTemplate}
+          />
+          <Button
+            icon="pi pi-plus"
+            className="p-button-rounded p-button-outlined"
+            disabled={creatingCategory}
+            onClick={handleAddCategory}
+            style={{ padding: "0.25rem 0.6rem", height: "2.2rem" }}
+            aria-label="Add Category"
           />
         </div>
       )}

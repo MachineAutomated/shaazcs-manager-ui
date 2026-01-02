@@ -335,6 +335,14 @@ body::before {
 .p-toast .pi-times {
   font-size: 1rem;
 }
+/* Center text vertically in Category dropdown placeholder/value */
+.centered-dropdown .p-dropdown-label {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  line-height: 2.5rem; /* match inline height for perfect centering */
+}
+
 
 
 .filter-bar {
