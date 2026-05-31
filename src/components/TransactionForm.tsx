@@ -30,6 +30,11 @@ type SavedTransactionPayload = {
   CreatedAt?: string;
 };
 
+type CalendarInputEvent = {
+  value?: Date | Date[] | null;
+  target?: { value?: unknown };
+};
+
 interface TransactionFormProps {
   initial?: TransactionFormInitial;
   disableItem?: boolean;
@@ -266,14 +271,23 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     );
   };
 
-  // Calendar change handler
-  type MaybeValueEvent = { value?: Date | Date[] | null };
-  const handleDateChange = (e: unknown) => {
-    const { value } = (e as MaybeValueEvent) ?? {};
-    const selectedDate = (value ?? null) as Date | null;
-    setCreatedAt(selectedDate);
-    const formatted = formatDateTime(selectedDate);
-    setFormattedDate(formatted);
+  // Hybrid input handling:
+  // - commit when the value is a valid Date
+  // - clear only when input is emptied
+  // - keep previous valid date during partial/invalid typing
+  const handleDateChange = (e: CalendarInputEvent) => {
+    if (e.value instanceof Date) {
+      setCreatedAt(e.value);
+      setFormattedDate(formatDateTime(e.value));
+      return;
+    }
+
+    const targetValue = (e.target as { value?: unknown } | undefined)?.value;
+    const rawText = typeof targetValue === "string" ? targetValue.trim() : "";
+    if (!rawText) {
+      setCreatedAt(null);
+      setFormattedDate("");
+    }
   };
 
   const handleAddCategory = async () => {
@@ -433,6 +447,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               className="transaction-form-components"
               value={CreatedAt}
               onChange={handleDateChange}
+              keepInvalid
               showTime
               hourFormat="24"
               dateFormat="dd.mm.yy"

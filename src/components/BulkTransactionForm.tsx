@@ -27,6 +27,11 @@ interface BulkTransactionFormProps {
   onSaved?: (count: number) => void;
 }
 
+type CalendarInputEvent = {
+  value?: Date | Date[] | null;
+  target?: { value?: unknown };
+};
+
 // ── helpers ────────────────────────────────────────────────────────────────
 
 const makeRow = (): BulkRow => ({
@@ -117,6 +122,19 @@ const BulkTransactionForm: React.FC<BulkTransactionFormProps> = ({ onClose, onSa
 
   const deleteRow = (index: number) =>
     setRows((prev) => prev.filter((_, i) => i !== index));
+
+  const handleRowDateChange = (index: number, e: CalendarInputEvent) => {
+    if (e.value instanceof Date) {
+      updateRow(index, "CreatedAt", e.value);
+      return;
+    }
+
+    const targetValue = (e.target as { value?: unknown } | undefined)?.value;
+    const rawText = typeof targetValue === "string" ? targetValue.trim() : "";
+    if (!rawText) {
+      updateRow(index, "CreatedAt", null);
+    }
+  };
 
   // ── submit ───────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
@@ -264,7 +282,8 @@ const BulkTransactionForm: React.FC<BulkTransactionFormProps> = ({ onClose, onSa
                 <div>
                   <Calendar
                     value={row.CreatedAt}
-                    onChange={(e) => updateRow(index, "CreatedAt", (e.value as Date) ?? null)}
+                    onChange={(e) => handleRowDateChange(index, e)}
+                    keepInvalid
                     showTime
                     hourFormat="24"
                     dateFormat="dd.mm.yy"
