@@ -39,14 +39,6 @@ interface TransactionFormProps {
   onSaved?: (list: SavedTransactionPayload[]) => void; // NEW: notify parent
 }
 
-// interface TransactionFormProps {
-//   initial?: TransactionFormInitial;
-//   disableItem?: boolean;
-//   disableCategory?: boolean;
-//   defaultUpdateIfExists?: boolean;
-//   onClose?: () => void;
-// }
-
 const TransactionForm: React.FC<TransactionFormProps> = ({
   initial,
   disableItem = false,

@@ -7,6 +7,7 @@ import { getTransactionsDetialsByMonth, deleteTransactions } from "../api/transa
 import { Tag } from "primereact/tag";
 import { Dialog } from 'primereact/dialog';
 import TransactionForm from "./TransactionForm";
+import BulkTransactionForm from "./BulkTransactionForm";
 import { Toast } from "primereact/toast";
 
 interface Transaction {
@@ -19,6 +20,7 @@ interface Transaction {
 
 const TransactionDetails: React.FC = () => {
   const [saveTransactionsVisible, setSaveTransactionsVisible] = useState(false);
+  const [bulkSaveVisible, setBulkSaveVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(false);
@@ -386,6 +388,13 @@ const TransactionDetails: React.FC = () => {
         />
 
         <Button
+          label="Bulk Save"
+          icon="pi pi-list"
+          onClick={() => setBulkSaveVisible(true)}
+          className="p-button-rounded p-button-outlined"
+        />
+
+        <Button
           label="Delete"
           icon="pi pi-trash"
           severity="danger"
@@ -393,6 +402,28 @@ const TransactionDetails: React.FC = () => {
           className="p-button-rounded p-button-outlined p-button-danger"
           style={{ marginLeft: 8 }}
         />
+
+        <Dialog
+          header="Bulk Save Transactions"
+          visible={bulkSaveVisible}
+          style={{ width: '80vw' }}
+          onHide={() => setBulkSaveVisible(false)}
+        >
+          <BulkTransactionForm
+            onClose={() => setBulkSaveVisible(false)}
+            onSaved={(count) => {
+              toast.current?.show({
+                severity: "success",
+                summary: "Bulk Saved",
+                detail: `${count} transaction${count !== 1 ? 's' : ''} saved successfully.`,
+                life: 3000,
+              });
+              setBulkSaveVisible(false);
+              // re-fetch if a month is already selected
+              if (selectedDate) handleFetch();
+            }}
+          />
+        </Dialog>
 
         <Dialog
           header={editingTransaction ? "Edit Transaction" : "Save Transaction!"}

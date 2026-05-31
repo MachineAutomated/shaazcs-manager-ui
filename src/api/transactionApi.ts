@@ -4,6 +4,17 @@ export async function saveTransaction(data: any) {
   return api.post(`/saveTransaction`, data);
 }
 
+export interface BulkTransactionItem {
+  Item: string;
+  Category: string;
+  Amount: number;
+  CreatedAt?: string;
+}
+
+export async function saveTransactionsBulk(items: BulkTransactionItem[]) {
+  return api.post(`/saveTransaction`, items);
+}
+
 export async function getSummary(year: number, month: number) {
   //Todo: Remove hardcoded year and month
   return api.get(`/summary?year=${year}&month=${month}`);
