@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { saveTransaction } from "../api/transactionApi";
 import { getCategories, createCategories } from "../api/utilitiesApi";
 import { Checkbox } from 'primereact/checkbox';
@@ -68,6 +68,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryType, setNewCategoryType] = useState<"IN" | "OUT">("IN");
   const [creatingCategory, setCreatingCategory] = useState(false);
+  const createdAtInputRef = useRef<HTMLInputElement>(null);
 
   const typeOptions: Array<{ label: string; value: "IN" | "OUT" }> = [
     { label: "IN", value: "IN" },
@@ -274,12 +275,12 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   };
 
   // Hybrid input handling:
-  // - commit when the value is a valid Date
+  // - commit when the value is a valid Date with a complete typed time
   // - clear only when input is emptied
   // - keep previous valid date during partial/invalid typing
+  // Reads raw text from DOM via inputRef — reliable in both dev and prod builds.
   const handleDateChange = (e: CalendarInputEvent) => {
-    const targetValue = (e.target as { value?: unknown } | undefined)?.value;
-    const rawText = typeof targetValue === "string" ? targetValue.trim() : "";
+    const rawText = createdAtInputRef.current?.value?.trim() ?? "";
 
     if (e.value instanceof Date) {
       // When user types and time is incomplete, PrimeReact can parse to midnight.
@@ -455,6 +456,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
               className="transaction-form-components"
               value={CreatedAt}
               onChange={handleDateChange}
+              inputRef={createdAtInputRef}
               keepInvalid
               showTime
               hourFormat="24"

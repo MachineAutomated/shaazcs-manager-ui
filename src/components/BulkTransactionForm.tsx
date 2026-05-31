@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { saveTransactionsBulk } from "../api/transactionApi";
 import { getCategories } from "../api/utilitiesApi";
 import { objectToMap } from "../utils/utility";
@@ -78,6 +78,8 @@ const BulkTransactionForm: React.FC<BulkTransactionFormProps> = ({ onClose, onSa
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  // One ref per row — read from DOM directly so it works in both dev and prod builds.
+  const dateInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // ── load categories ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -126,8 +128,7 @@ const BulkTransactionForm: React.FC<BulkTransactionFormProps> = ({ onClose, onSa
     setRows((prev) => prev.filter((_, i) => i !== index));
 
   const handleRowDateChange = (index: number, e: CalendarInputEvent) => {
-    const targetValue = (e.target as { value?: unknown } | undefined)?.value;
-    const rawText = typeof targetValue === "string" ? targetValue.trim() : "";
+    const rawText = dateInputRefs.current[index]?.value?.trim() ?? "";
 
     if (e.value instanceof Date) {
       if (rawText && !hasCompleteTypedTime(rawText)) {
@@ -289,6 +290,7 @@ const BulkTransactionForm: React.FC<BulkTransactionFormProps> = ({ onClose, onSa
                   <Calendar
                     value={row.CreatedAt}
                     onChange={(e) => handleRowDateChange(index, e)}
+                    inputRef={(el) => { dateInputRefs.current[index] = el; }}
                     keepInvalid
                     showTime
                     hourFormat="24"
