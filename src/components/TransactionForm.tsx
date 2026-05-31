@@ -35,6 +35,8 @@ type CalendarInputEvent = {
   target?: { value?: unknown };
 };
 
+const hasCompleteTypedTime = (raw: string) => /(^|\s|T)\d{1,2}:\d{2}(?::\d{2})?(\.\d{1,3})?$/.test(raw.trim());
+
 interface TransactionFormProps {
   initial?: TransactionFormInitial;
   disableItem?: boolean;
@@ -276,14 +278,20 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   // - clear only when input is emptied
   // - keep previous valid date during partial/invalid typing
   const handleDateChange = (e: CalendarInputEvent) => {
+    const targetValue = (e.target as { value?: unknown } | undefined)?.value;
+    const rawText = typeof targetValue === "string" ? targetValue.trim() : "";
+
     if (e.value instanceof Date) {
+      // When user types and time is incomplete, PrimeReact can parse to midnight.
+      // Ignore these intermediate states to preserve existing time.
+      if (rawText && !hasCompleteTypedTime(rawText)) {
+        return;
+      }
       setCreatedAt(e.value);
       setFormattedDate(formatDateTime(e.value));
       return;
     }
 
-    const targetValue = (e.target as { value?: unknown } | undefined)?.value;
-    const rawText = typeof targetValue === "string" ? targetValue.trim() : "";
     if (!rawText) {
       setCreatedAt(null);
       setFormattedDate("");

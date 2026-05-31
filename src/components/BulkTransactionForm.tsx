@@ -32,6 +32,8 @@ type CalendarInputEvent = {
   target?: { value?: unknown };
 };
 
+const hasCompleteTypedTime = (raw: string) => /(^|\s|T)\d{1,2}:\d{2}(?::\d{2})?(\.\d{1,3})?$/.test(raw.trim());
+
 // ── helpers ────────────────────────────────────────────────────────────────
 
 const makeRow = (): BulkRow => ({
@@ -124,13 +126,17 @@ const BulkTransactionForm: React.FC<BulkTransactionFormProps> = ({ onClose, onSa
     setRows((prev) => prev.filter((_, i) => i !== index));
 
   const handleRowDateChange = (index: number, e: CalendarInputEvent) => {
+    const targetValue = (e.target as { value?: unknown } | undefined)?.value;
+    const rawText = typeof targetValue === "string" ? targetValue.trim() : "";
+
     if (e.value instanceof Date) {
+      if (rawText && !hasCompleteTypedTime(rawText)) {
+        return;
+      }
       updateRow(index, "CreatedAt", e.value);
       return;
     }
 
-    const targetValue = (e.target as { value?: unknown } | undefined)?.value;
-    const rawText = typeof targetValue === "string" ? targetValue.trim() : "";
     if (!rawText) {
       updateRow(index, "CreatedAt", null);
     }
