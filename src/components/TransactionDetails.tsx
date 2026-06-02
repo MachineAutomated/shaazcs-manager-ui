@@ -4,6 +4,7 @@ import { Button } from "primereact/button";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { getTransactionsDetialsByMonth, deleteTransactions } from "../api/transactionApi";
+import { getCategories } from "../api/utilitiesApi";
 import { Tag } from "primereact/tag";
 import { Dialog } from 'primereact/dialog';
 import TransactionForm from "./TransactionForm";
@@ -17,6 +18,8 @@ interface Transaction {
   Amount: number;
   CreatedAt: string;
 }
+
+type TransactionType = "IN" | "OUT";
 
 const TransactionDetails: React.FC = () => {
   const [saveTransactionsVisible, setSaveTransactionsVisible] = useState(false);
@@ -33,6 +36,9 @@ const TransactionDetails: React.FC = () => {
   const [selectedTransactions, setSelectedTransactions] = useState<Transaction[]>([]);
   const toast = useRef<Toast | null>(null);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [categoryTypeByName, setCategoryTypeByName] = useState<Record<string, TransactionType>>({});
+
+  const normalizeCategoryKey = (value: string) => value.trim().toLowerCase();
 
 
   useEffect(() => {
@@ -57,6 +63,40 @@ const TransactionDetails: React.FC = () => {
     window.addEventListener("resize", calculateRows);
     return () => window.removeEventListener("resize", calculateRows);
 
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchCategoryTypes = async () => {
+      try {
+        const response = await getCategories();
+        const data = response?.data;
+        if (!Array.isArray(data)) return;
+
+        const nextMap: Record<string, TransactionType> = {};
+        for (const raw of data as any[]) {
+          const categoryName = String(raw?.name ?? raw?.Name ?? "").trim();
+          const categoryType = String(raw?.type ?? raw?.Type ?? "").toUpperCase();
+          if (!categoryName) continue;
+          if (categoryType === "IN" || categoryType === "OUT") {
+            nextMap[normalizeCategoryKey(categoryName)] = categoryType;
+          }
+        }
+
+        if (isMounted) {
+          setCategoryTypeByName(nextMap);
+        }
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+
+    fetchCategoryTypes();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
 
@@ -351,6 +391,17 @@ const TransactionDetails: React.FC = () => {
     setSelectedTransactions([]);
   };
 
+  const getTransactionType = (tx: Transaction): TransactionType | undefined => {
+    return categoryTypeByName[normalizeCategoryKey(tx.Category)];
+  };
+
+  const rowClassName = (rowData: Transaction) => {
+    const type = getTransactionType(rowData);
+    if (type === "IN") return "tx-row-in";
+    if (type === "OUT") return "tx-row-out";
+    return "";
+  };
+
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -525,6 +576,7 @@ const TransactionDetails: React.FC = () => {
         paginator
         rows={rowsPerPage}
         stripedRows
+        rowClassName={rowClassName}
         emptyMessage="No transactions found."
         size="small"
         selectionMode="multiple" // disambiguate row-multiple selection

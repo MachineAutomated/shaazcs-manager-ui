@@ -259,6 +259,14 @@ body::before {
 
 }
 
+.p-datatable .tx-row-in:not(.p-highlight) > td {
+  background-color: #e8f5e9 !important;
+}
+
+.p-datatable .tx-row-out:not(.p-highlight) > td {
+  background-color: #ffebee !important;
+}
+
 .transaction-form-components {
   max-width: 600px;
   width: 100%;
